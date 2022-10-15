@@ -1,15 +1,16 @@
 package com.example.taskmanager.domain.repository
 
-import com.example.taskmanager.dataModels.NoteWithTagsDto
-import com.example.taskmanager.dataModels.TagEntity
-import com.example.taskmanager.domain.dataModels.NoteWithTags
+import com.example.taskmanager.domain.dataModels.data.NoteWithTagsEntity
+import com.example.taskmanager.domain.dataModels.Resource
+import com.example.taskmanager.domain.dataModels.data.TagEntity
+import com.example.taskmanager.domain.dataModels.interfaces.NoteWithTags
 import kotlinx.coroutines.flow.Flow
 
 interface Repository {
     fun getNotes(): Flow<List<NoteWithTags>>
     fun getNoteById(id: String): Flow<NoteWithTags?>
-    suspend fun addNote(noteWithTagsDto: NoteWithTagsDto)
-    suspend fun addTag(tag: TagEntity)
-    suspend fun updateNote(noteWithTagsDto: NoteWithTagsDto)
-    suspend fun deleteNote(noteWithTagsDto: NoteWithTagsDto)
+    suspend fun addNote(note: NoteWithTagsEntity): Resource<Unit>
+    suspend fun addTag(tag: TagEntity): Resource<Unit>
+    suspend fun updateNote(note: NoteWithTagsEntity): Resource<Unit>
+    suspend fun deleteNote(note: NoteWithTagsEntity): Resource<Unit>
 }

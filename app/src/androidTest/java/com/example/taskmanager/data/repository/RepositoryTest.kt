@@ -6,12 +6,16 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.example.taskmanager.data.local.room.AppDatabase
-import com.example.taskmanager.dataModels.NoteEntity
-import com.example.taskmanager.dataModels.NoteWithTagsDto
-import com.example.taskmanager.dataModels.TagEntity
-import com.example.taskmanager.domain.dataModels.Attachment
+import com.example.taskmanager.domain.dataModels.data.NoteEntity
+import com.example.taskmanager.domain.dataModels.data.NoteWithTagsEntity
+import com.example.taskmanager.domain.dataModels.Resource
+import com.example.taskmanager.domain.dataModels.data.TagEntity
+import com.example.taskmanager.domain.dataModels.interfaces.Attachment
 import com.example.taskmanager.domain.repository.Repository
 import com.google.common.truth.Truth.assertThat
+import dev.krud.shapeshift.ShapeShift
+import dev.krud.shapeshift.ShapeShiftBuilder
+import dev.krud.shapeshift.enums.AutoMappingStrategy
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,6 +33,7 @@ import org.junit.runner.RunWith
 class RepositoryTest {
     private lateinit var db: AppDatabase
     private lateinit var repository: Repository
+    private lateinit var shapeShift: ShapeShift
 
     @OptIn(DelicateCoroutinesApi::class)
     private var mainThread = newSingleThreadContext("UI thread")
@@ -38,7 +43,12 @@ class RepositoryTest {
         Dispatchers.setMain(mainThread)
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
-        repository = RepositoryImpl(db.noteDao(), db.tagDao())
+        shapeShift = ShapeShiftBuilder()
+            .withMapping<NoteWithTagsEntity, NoteEntity> {
+                autoMap(AutoMappingStrategy.BY_NAME_AND_TYPE)
+            }
+            .build()
+        repository = RepositoryImpl(db.noteDao(), db.tagDao(), shapeShift)
     }
 
     @After
@@ -51,9 +61,11 @@ class RepositoryTest {
     @Test
     fun getNotes() = runTest {
         val tag = TagEntity("tag", 1)
-        val note = NoteWithTagsDto(
-            NoteEntity(title = "title", description = "description", emptyList()),
-            listOf(tag)
+        val note = NoteWithTagsEntity(
+            title = "title",
+            description = "description",
+            attachments = emptyList(),
+            tags = listOf(tag)
         )
         repository.addNote(note)
         repository.getNotes().test {
@@ -66,34 +78,41 @@ class RepositoryTest {
 
     @Test
     fun addNote() = runTest {
-        val note = NoteWithTagsDto(NoteEntity("title", "description", emptyList()), emptyList())
-        repository.addNote(note)
+        val note = NoteWithTagsEntity(
+            title = "title", description = "description",
+            attachments = emptyList(),
+            tags = emptyList()
+        )
+        val result = repository.addNote(note)
+        assertThat(result).isInstanceOf(Resource.Success::class.java)
         repository.getNotes().test {
             val notes = awaitItem()
             assertThat(notes).isNotEmpty()
-            assertThat(notes.first().note.title).isEqualTo(note.note.title)
+            assertThat(notes.first().title).isEqualTo(note.title)
             assertThat(notes.first().tags).isEmpty()
         }
     }
 
     @Test
     fun updateNote() = runTest {
-        val note = NoteWithTagsDto(NoteEntity("title", "description", emptyList()), emptyList())
+        val note = NoteWithTagsEntity(
+            title = "title", description = "description",
+            attachments = emptyList(),
+            tags = emptyList()
+        )
         repository.addNote(note)
         val updatedNote = note.copy(
-            note = note.note.copy(
-                title = "updated title",
-                attachments = listOf(Attachment.Audio("path"))
-            ),
+            title = "updated title",
+            attachments = listOf(Attachment.Audio("path")),
             tags = listOf(TagEntity("tag", 1))
         )
         repository.updateNote(updatedNote)
         repository.getNotes().test {
             val notes = awaitItem()
             assertThat(notes).isNotEmpty()
-            assertThat(notes.first().note.title).isEqualTo(updatedNote.note.title)
+            assertThat(notes.first().title).isEqualTo(updatedNote.title)
             assertThat(notes.first().tags).hasSize(1)
-            assertThat(notes.first().note.attachments).hasSize(1)
+            assertThat(notes.first().attachments).hasSize(1)
         }
     }
 }

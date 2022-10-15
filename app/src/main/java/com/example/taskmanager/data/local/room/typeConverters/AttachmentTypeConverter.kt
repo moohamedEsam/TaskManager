@@ -1,7 +1,7 @@
 package com.example.taskmanager.data.local.room.typeConverters
 
 import androidx.room.TypeConverter
-import com.example.taskmanager.domain.dataModels.Attachment
+import com.example.taskmanager.domain.dataModels.interfaces.Attachment
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

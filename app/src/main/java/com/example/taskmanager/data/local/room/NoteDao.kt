@@ -6,20 +6,20 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.taskmanager.dataModels.NoteEntity
-import com.example.taskmanager.dataModels.NoteWithTagCrossRef
-import com.example.taskmanager.dataModels.NoteWithTagsDto
+import com.example.taskmanager.domain.dataModels.data.NoteEntity
+import com.example.taskmanager.domain.dataModels.data.NoteWithTagCrossRef
+import com.example.taskmanager.domain.dataModels.data.NoteWithTagsEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
     @Transaction
     @Query("SELECT * FROM notes")
-    fun getNotes(): Flow<List<NoteWithTagsDto>>
+    fun getNotes(): Flow<List<NoteWithTagsEntity>>
 
     @Transaction
     @Query("SELECT * FROM notes WHERE noteId = :id")
-    fun getNoteById(id: String): Flow<NoteWithTagsDto?>
+    fun getNoteById(id: String): Flow<NoteWithTagsEntity?>
 
     @Insert
     suspend fun insertNote(noteEntity: NoteEntity)

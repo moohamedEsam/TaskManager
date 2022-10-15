@@ -1,4 +1,4 @@
-package com.example.taskmanager.domain.dataModels
+package com.example.taskmanager.domain.dataModels.interfaces
 
 interface Note {
     val title: String
