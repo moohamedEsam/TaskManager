@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.Navigation
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.taskmanager.presentation.screens.noteForm.NoteFormScreen
 import com.example.taskmanager.presentation.screens.notes.NotesScreen
 
 @Composable
@@ -29,6 +30,15 @@ fun Navigation(
     ) {
         composable(Screens.NotesScreen.route) {
             NotesScreen(navHostController = navHostController)
+        }
+
+        composable("${Screens.CreateNoteScreen.route}/{noteId}") {
+            val noteId = it.arguments?.getString("noteId") ?: "   "
+            NoteFormScreen(
+                navHostController = navHostController,
+                snackbarHostState = snackbarHostState,
+                noteId = noteId
+            )
         }
     }
 }

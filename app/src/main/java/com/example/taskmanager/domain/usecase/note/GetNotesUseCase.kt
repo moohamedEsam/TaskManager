@@ -8,10 +8,18 @@ import kotlinx.coroutines.flow.map
 
 fun interface GetNotesUseCase : suspend () -> Flow<List<NoteWithTagsDto>>
 
+fun interface GetNoteByIdUseCase : suspend (String) -> Flow<NoteWithTagsDto?>
+
 fun getNotesUseCase(repository: Repository, shapeShift: ShapeShift) = GetNotesUseCase {
     repository.getNotes().map { notes ->
         notes.map { note ->
             shapeShift.map(note)
         }
+    }
+}
+
+fun getNoteByIdUseCase(repository: Repository, shapeShift: ShapeShift) = GetNoteByIdUseCase { id ->
+    repository.getNoteById(id).map { note ->
+        shapeShift.map(note ?: return@map null)
     }
 }

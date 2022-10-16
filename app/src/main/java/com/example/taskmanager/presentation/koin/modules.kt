@@ -7,10 +7,8 @@ import com.example.taskmanager.domain.dataModels.data.NoteWithTagsEntity
 import com.example.taskmanager.domain.dataModels.data.NoteEntity
 import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
 import com.example.taskmanager.domain.repository.Repository
-import com.example.taskmanager.domain.usecase.note.createNoteUseCase
-import com.example.taskmanager.domain.usecase.note.deleteNoteUseCase
-import com.example.taskmanager.domain.usecase.note.getNotesUseCase
-import com.example.taskmanager.domain.usecase.note.updateNoteUseCase
+import com.example.taskmanager.domain.usecase.note.*
+import com.example.taskmanager.presentation.screens.noteForm.NoteFormViewModel
 import com.example.taskmanager.presentation.screens.notes.NotesViewModel
 import dev.krud.shapeshift.ShapeShiftBuilder
 import dev.krud.shapeshift.enums.AutoMappingStrategy
@@ -24,7 +22,9 @@ val noteModule = module {
     single { updateNoteUseCase(get(), get()) }
     single { deleteNoteUseCase(get(), get()) }
     single { getNotesUseCase(get(), get()) }
+    single { getNoteByIdUseCase(get(), get()) }
     viewModel { NotesViewModel(get(), get()) }
+    viewModel { params -> NoteFormViewModel(params[0], get(), get(), get()) }
 }
 
 val mainModule = module {

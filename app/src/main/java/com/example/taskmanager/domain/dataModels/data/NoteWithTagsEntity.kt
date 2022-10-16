@@ -16,5 +16,11 @@ data class NoteWithTagsEntity(
         associateBy = Junction(NoteWithTagCrossRef::class)
     )
     override val tags: List<TagEntity> = emptyList(),
+    override val isFavorite: Boolean = false,
+    override val isPinned: Boolean = false,
+    override val isArchived: Boolean = false,
+    override val isDeleted: Boolean = false,
+    override val lastEditDate: Long = 0,
+    override val creationDate: Long = 0,
     override val noteId: String = UUID.randomUUID().toString()
 ) : NoteWithTags

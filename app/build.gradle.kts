@@ -61,6 +61,9 @@ dependencies {
     //icons
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
 
+    // constraint layout
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
     //navigation
     val navigationVersion: String by rootProject.extra
     implementation("androidx.navigation:navigation-compose:$navigationVersion")
