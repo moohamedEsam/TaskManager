@@ -8,20 +8,19 @@ import com.example.taskmanager.presentation.composables.RemovableNoteBody
 import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 
 class TextProvider : NoteBodyProvider {
-    private var value = ""
+    private var textState = mutableStateOf("")
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Draw(modifier: Modifier, onRemove: () -> Unit) {
         RemovableNoteBody(onRemove = onRemove, modifier = modifier) {
-            var composeValue by remember {
-                mutableStateOf(value)
+            val composeValue by remember {
+                textState
             }
             TextField(
                 value = composeValue,
-                onValueChange = {newValue->
-                    composeValue = newValue
-                    value = newValue
+                onValueChange = { newValue ->
+                    textState.value = newValue
                 },
                 modifier = it.fillMaxSize(),
                 colors = getTransparentTextFieldColors(),
@@ -32,5 +31,5 @@ class TextProvider : NoteBodyProvider {
 
     }
 
-    override fun getNoteBody(): NoteBody = NoteText(value)
+    override fun getNoteBody(): NoteBody = NoteText(textState.value)
 }
