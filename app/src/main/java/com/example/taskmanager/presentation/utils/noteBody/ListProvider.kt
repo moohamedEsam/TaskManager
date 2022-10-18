@@ -1,40 +1,47 @@
 package com.example.taskmanager.presentation.utils.noteBody
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.example.taskmanager.presentation.composables.RemovableNoteBody
+import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 
-object ListProvider : NoteBodyProvider {
+class ListProvider : NoteBodyProvider {
+    private var value = listOf("")
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun Draw(modifier: Modifier, onAdd: (NoteBody) -> Unit, onRemove: () -> Unit) {
+    override fun Draw(modifier: Modifier, onRemove: () -> Unit) {
+        val itemsCollection = remember {
+            mutableStateListOf("")
+        }
+        LaunchedEffect(key1 = itemsCollection) {
+            value = itemsCollection
+        }
         RemovableNoteBody(onRemove = onRemove, modifier = modifier) {
-            val itemsCollection = remember {
-                mutableStateListOf("")
-            }
-            Column(
-                modifier = it.fillMaxWidth(),
-            ) {
+            Column(modifier = it) {
                 val title = listTitle()
                 LazyColumn(
+                    modifier = it
+                        .fillMaxWidth()
+                        .heightIn(20.dp, (LocalConfiguration.current.screenHeightDp / 3).dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     itemsIndexed(itemsCollection) { index, value ->
-                        OutlinedTextField(
+                        TextField(
                             value = value,
                             onValueChange = { itemsCollection[index] = it },
                             modifier = Modifier.fillMaxWidth(),
+                            colors = getTransparentTextFieldColors()
                         )
                     }
+
                 }
                 OutlinedButton(
                     onClick = { itemsCollection.add("") },
@@ -42,9 +49,13 @@ object ListProvider : NoteBodyProvider {
                 ) {
                     Text("Add Item")
                 }
+
             }
+
         }
     }
+
+    override fun getNoteBody(): NoteBody = DotList(value)
 
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)
@@ -61,10 +72,7 @@ object ListProvider : NoteBodyProvider {
                     style = MaterialTheme.typography.headlineMedium
                 )
             },
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
-            ),
+            colors = getTransparentTextFieldColors(),
             textStyle = MaterialTheme.typography.headlineMedium,
             singleLine = true,
             maxLines = 1

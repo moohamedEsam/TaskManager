@@ -1,11 +1,14 @@
 package com.example.taskmanager.presentation.screens.noteForm
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
 import com.example.taskmanager.domain.usecase.note.CreateNoteUseCase
 import com.example.taskmanager.domain.usecase.note.GetNoteByIdUseCase
 import com.example.taskmanager.domain.usecase.note.UpdateNoteUseCase
+import com.example.taskmanager.presentation.utils.noteBody.NoteBodyProvider
+import com.example.taskmanager.presentation.utils.noteBody.NoteText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -20,6 +23,8 @@ class NoteFormViewModel(
 ) : ViewModel() {
     private val _note = MutableStateFlow(NoteWithTagsDto())
     val note = _note.asStateFlow()
+    private val _noteBodies = MutableStateFlow(emptyList<NoteBodyProvider>())
+    val noteBodies = _noteBodies.asStateFlow()
 
     init {
         getNote()
@@ -31,6 +36,23 @@ class NoteFormViewModel(
                 if (it == null) return@collectLatest
                 _note.update { _ -> it }
             }
+        }
+    }
+
+    fun addNoteBody(noteBody: NoteBodyProvider) {
+        _noteBodies.update { it + noteBody }
+    }
+
+    fun removeNoteBody(noteBody: NoteBodyProvider) {
+        _noteBodies.update { it - noteBody }
+    }
+
+    fun saveNote() = viewModelScope.launch {
+        _noteBodies.value.forEach {
+
+            val noteBody = it.getNoteBody()
+            if (noteBody is NoteText)
+                Log.i("NoteFormViewModel", "saveNote: ${noteBody.text}")
         }
     }
 }

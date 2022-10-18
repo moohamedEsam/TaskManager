@@ -1,8 +1,17 @@
 package com.example.taskmanager.presentation.screens.noteForm
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,12 +30,72 @@ fun NoteFormScreen(
     noteId: String,
     viewModel: NoteFormViewModel = koinViewModel(parameters = { parametersOf(noteId) })
 ) {
-    NoteFormScreenContent()
+    NoteFormScreenContent(viewModel)
 }
 
 @Composable
-fun NoteFormScreenContent() {
-    Column(modifier = Modifier.fillMaxSize()) {
+fun NoteFormScreenContent(viewModel: NoteFormViewModel) {
+    val noteBodies by viewModel.noteBodies.collectAsState()
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(noteBodies) { noteBody ->
+                noteBody.Draw(
+                    modifier = Modifier,
+                ) {
+                    viewModel.removeNoteBody(noteBody)
+                }
+            }
+        }
+        ToolBoxRow(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            onTitleClick = { viewModel.addNoteBody(TextProvider()) },
+            onListClick = { viewModel.addNoteBody(ListProvider()) },
+            onImageClick = { viewModel.saveNote() }
+        )
+    }
+}
+
+@Composable
+private fun ToolBoxRow(
+    modifier: Modifier,
+    onTitleClick: () -> Unit = {},
+    onListClick: () -> Unit = {},
+    onImageClick: () -> Unit = {},
+    onVideoClick: () -> Unit = {},
+    onTableClick: () -> Unit = {},
+) {
+    Card(modifier = modifier.padding(horizontal = 16.dp)) {
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(0.8f)
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onTitleClick) {
+                Icon(imageVector = Icons.Default.Title, contentDescription = null)
+            }
+            IconButton(onClick = onListClick) {
+                Icon(imageVector = Icons.Default.List, contentDescription = null)
+            }
+            IconButton(onClick = onImageClick) {
+                Icon(imageVector = Icons.Default.Image, contentDescription = null)
+            }
+            IconButton(onClick = onVideoClick) {
+                Icon(imageVector = Icons.Default.VideoFile, contentDescription = null)
+            }
+            IconButton(onClick = onTableClick) {
+                Icon(imageVector = Icons.Default.TableView, contentDescription = null)
+            }
+            Spacer(modifier = Modifier.weight(0.8f))
+            IconButton(onClick = { }) {
+                Icon(imageVector = Icons.Default.ExpandLess, contentDescription = null)
+            }
+        }
     }
 }
 
@@ -38,7 +107,8 @@ fun NoteFormPreview() {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            ListProvider.Draw(modifier = Modifier.fillMaxWidth().height(400.dp), onAdd = {}) {}
+
+            ToolBoxRow(modifier = Modifier.align(Alignment.BottomStart))
         }
     }
 }

@@ -1,11 +1,13 @@
 package com.example.taskmanager.presentation.composables
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,7 +22,11 @@ fun RemovableNoteBody(
     onRemove: () -> Unit,
     body: @Composable ConstraintLayoutScope.(Modifier) -> Unit
 ) {
-    ConstraintLayout(modifier = modifier.animateContentSize()) {
+    ConstraintLayout(
+        modifier = modifier
+            .animateContentSize()
+            .border(1.dp, MaterialTheme.colorScheme.inversePrimary)
+    ) {
         val (bodyRef, removeButton) = createRefs()
         body(
             Modifier

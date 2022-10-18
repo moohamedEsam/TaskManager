@@ -5,5 +5,7 @@ import androidx.compose.ui.Modifier
 
 sealed interface NoteBodyProvider {
     @Composable
-    fun Draw(modifier: Modifier, onAdd: (NoteBody) -> Unit, onRemove: () -> Unit)
+    fun Draw(modifier: Modifier, onRemove: () -> Unit)
+
+    fun getNoteBody(): NoteBody
 }

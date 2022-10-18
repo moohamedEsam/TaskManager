@@ -26,7 +26,7 @@ fun Navigation(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
-            .padding(8.dp)
+            .padding(vertical = 8.dp)
     ) {
         composable(Screens.NotesScreen.route) {
             NotesScreen(navHostController = navHostController)

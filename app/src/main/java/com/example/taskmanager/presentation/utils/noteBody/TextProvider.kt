@@ -1,33 +1,36 @@
 package com.example.taskmanager.presentation.utils.noteBody
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.taskmanager.presentation.composables.RemovableNoteBody
+import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 
-object TextProvider : NoteBodyProvider {
+class TextProvider : NoteBodyProvider {
+    private var value = ""
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun Draw(modifier: Modifier, onAdd: (NoteBody) -> Unit, onRemove: () -> Unit) {
+    override fun Draw(modifier: Modifier, onRemove: () -> Unit) {
         RemovableNoteBody(onRemove = onRemove, modifier = modifier) {
-            OutlinedTextField(
-                value = "",
-                onValueChange = {},
-                modifier = it.fillMaxSize()
+            var composeValue by remember {
+                mutableStateOf(value)
+            }
+            TextField(
+                value = composeValue,
+                onValueChange = {newValue->
+                    composeValue = newValue
+                    value = newValue
+                },
+                modifier = it.fillMaxSize(),
+                colors = getTransparentTextFieldColors(),
+                placeholder = { Text(text = "Enter text here") }
             )
         }
 
 
     }
+
+    override fun getNoteBody(): NoteBody = NoteText(value)
 }
