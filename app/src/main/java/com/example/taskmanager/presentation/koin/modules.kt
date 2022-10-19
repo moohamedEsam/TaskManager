@@ -1,6 +1,10 @@
 package com.example.taskmanager.presentation.koin
 
+import android.os.Build
 import androidx.room.Room
+import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import com.example.taskmanager.data.local.room.AppDatabase
 import com.example.taskmanager.data.repository.RepositoryImpl
 import com.example.taskmanager.domain.dataModels.data.NoteWithTagsEntity
@@ -28,6 +32,7 @@ val noteModule = module {
 }
 
 val mainModule = module {
+    single { provideImageLoader() }
     single { provideAppDatabase() }
     single { provideNoteDao(get()) }
     single { provideTagDao(get()) }
@@ -53,3 +58,15 @@ private fun Scope.provideAppDatabase() = Room.databaseBuilder(
     AppDatabase::class.java,
     "app_database"
 ).build()
+
+fun Scope.provideImageLoader() = ImageLoader
+    .Builder(androidContext())
+    .components {
+        if (Build.VERSION.SDK_INT >= 28) {
+            add(ImageDecoderDecoder.Factory())
+        } else {
+            add(GifDecoder.Factory())
+        }
+    }
+    .crossfade(true)
+    .build()

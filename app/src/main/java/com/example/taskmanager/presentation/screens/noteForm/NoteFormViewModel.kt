@@ -7,7 +7,7 @@ import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
 import com.example.taskmanager.domain.usecase.note.CreateNoteUseCase
 import com.example.taskmanager.domain.usecase.note.GetNoteByIdUseCase
 import com.example.taskmanager.domain.usecase.note.UpdateNoteUseCase
-import com.example.taskmanager.presentation.utils.noteBody.NoteBodyProvider
+import com.example.taskmanager.presentation.utils.noteBodyProvider.NoteBodyProvider
 import com.example.taskmanager.presentation.utils.noteBody.NoteText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

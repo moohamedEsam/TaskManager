@@ -1,4 +1,4 @@
-package com.example.taskmanager.presentation.utils.noteBody
+package com.example.taskmanager.presentation.utils.noteBodyProvider
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.example.taskmanager.presentation.composables.RemovableNoteBody
 import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
+import com.example.taskmanager.presentation.utils.noteBody.*
 
 class ListProvider(private val listType: ListType) : NoteBodyProvider {
 

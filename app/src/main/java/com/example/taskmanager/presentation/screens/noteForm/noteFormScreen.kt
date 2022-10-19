@@ -1,6 +1,5 @@
 package com.example.taskmanager.presentation.screens.noteForm
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,8 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.taskmanager.presentation.utils.noteBody.ListProvider
-import com.example.taskmanager.presentation.utils.noteBody.TextProvider
+import com.example.taskmanager.presentation.utils.noteBodyProvider.*
 import com.example.taskmanager.ui.theme.TaskManagerTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -42,9 +40,7 @@ fun NoteFormScreenContent(viewModel: NoteFormViewModel) {
             modifier = Modifier.fillMaxSize()
         ) {
             items(noteBodies) { noteBody ->
-                noteBody.Draw(
-                    modifier = Modifier,
-                ) {
+                noteBody.Draw(modifier = Modifier) {
                     viewModel.removeNoteBody(noteBody)
                 }
             }
@@ -52,8 +48,12 @@ fun NoteFormScreenContent(viewModel: NoteFormViewModel) {
         ToolBoxRow(
             modifier = Modifier.align(Alignment.BottomCenter),
             onTitleClick = { viewModel.addNoteBody(TextProvider()) },
-            onListClick = { viewModel.addNoteBody(ListProvider()) },
-            onImageClick = { viewModel.saveNote() }
+            onListClick = { viewModel.addNoteBody(ListProvider(ListType.Normal)) },
+            onBulletListClick = { viewModel.addNoteBody(ListProvider(ListType.Bullet)) },
+            onNumberedListClick = { viewModel.addNoteBody(ListProvider(ListType.Numbered)) },
+            onCheckListClick = { viewModel.addNoteBody(ListProvider(ListType.Check)) },
+            onTableClick = { viewModel.addNoteBody(TableProvider(6)) },
+            onImageClick = { viewModel.addNoteBody(ImageProvider()) }
         )
     }
 }
@@ -62,6 +62,9 @@ fun NoteFormScreenContent(viewModel: NoteFormViewModel) {
 private fun ToolBoxRow(
     modifier: Modifier,
     onTitleClick: () -> Unit = {},
+    onBulletListClick: () -> Unit = {},
+    onNumberedListClick: () -> Unit = {},
+    onCheckListClick: () -> Unit = {},
     onListClick: () -> Unit = {},
     onImageClick: () -> Unit = {},
     onVideoClick: () -> Unit = {},
@@ -81,6 +84,16 @@ private fun ToolBoxRow(
             }
             IconButton(onClick = onListClick) {
                 Icon(imageVector = Icons.Default.List, contentDescription = null)
+            }
+            IconButton(onClick = onBulletListClick) {
+                Icon(imageVector = Icons.Default.FormatListBulleted, contentDescription = null)
+            }
+
+            IconButton(onClick = onNumberedListClick) {
+                Icon(imageVector = Icons.Default.FormatListNumbered, contentDescription = null)
+            }
+            IconButton(onClick = onCheckListClick) {
+                Icon(imageVector = Icons.Default.Checklist, contentDescription = null)
             }
             IconButton(onClick = onImageClick) {
                 Icon(imageVector = Icons.Default.Image, contentDescription = null)

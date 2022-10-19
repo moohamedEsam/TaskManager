@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import coil.compose.AsyncImage
 import java.io.File
 
-class Image(private val path: String) : NoteBody {
+class NoteImage(private val path: String) : NoteBody {
         @Composable
         override fun Draw(modifier: Modifier) {
             val bitmap by remember {

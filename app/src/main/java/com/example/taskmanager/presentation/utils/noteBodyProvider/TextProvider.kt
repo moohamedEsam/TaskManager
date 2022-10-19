@@ -1,4 +1,4 @@
-package com.example.taskmanager.presentation.utils.noteBody
+package com.example.taskmanager.presentation.utils.noteBodyProvider
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.*
@@ -6,6 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.example.taskmanager.presentation.composables.RemovableNoteBody
 import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
+import com.example.taskmanager.presentation.utils.noteBody.NoteBody
+import com.example.taskmanager.presentation.utils.noteBody.NoteText
 
 class TextProvider : NoteBodyProvider {
     private var textState = mutableStateOf("")
