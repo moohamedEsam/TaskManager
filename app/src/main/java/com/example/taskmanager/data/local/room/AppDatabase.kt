@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.taskmanager.data.local.room.typeConverters.AttachmentTypeConverter
+import com.example.taskmanager.data.local.room.typeConverters.NoteBodyConverter
 import com.example.taskmanager.domain.dataModels.data.NoteEntity
 import com.example.taskmanager.domain.dataModels.data.NoteWithTagCrossRef
 import com.example.taskmanager.domain.dataModels.data.TagEntity
@@ -13,7 +14,7 @@ import com.example.taskmanager.domain.dataModels.data.TagEntity
     version = 1,
     exportSchema = false
 )
-@TypeConverters(AttachmentTypeConverter::class)
+@TypeConverters(AttachmentTypeConverter::class, NoteBodyConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
     abstract fun tagDao(): TagDao

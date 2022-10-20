@@ -13,28 +13,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 
+@kotlinx.serialization.Serializable
 class CheckList(private val checkListItems: List<CheckListItem>) : NoteBody {
-        data class CheckListItem(val text: String, val isChecked: Boolean)
+    @kotlinx.serialization.Serializable
+    data class CheckListItem(val text: String, val isChecked: Boolean)
 
-        @Composable
-        override fun Draw(modifier: Modifier) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = modifier.fillMaxWidth()
-            ) {
-                items(checkListItems) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(checked = it.isChecked, onCheckedChange = {})
-                        Text(
-                            text = it.text,
-                            modifier = Modifier.weight(1f),
-                            textDecoration = if (it.isChecked) TextDecoration.LineThrough else TextDecoration.None
-                        )
-                    }
+    @Composable
+    override fun Draw(modifier: Modifier) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = modifier.fillMaxWidth()
+        ) {
+            items(checkListItems) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(checked = it.isChecked, onCheckedChange = {})
+                    Text(
+                        text = it.text,
+                        modifier = Modifier.weight(1f),
+                        textDecoration = if (it.isChecked) TextDecoration.LineThrough else TextDecoration.None
+                    )
                 }
             }
         }
+    }
 }

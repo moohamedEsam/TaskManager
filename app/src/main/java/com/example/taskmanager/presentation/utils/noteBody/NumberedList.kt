@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+@kotlinx.serialization.Serializable
 class NumberedList(private val items: List<String>) : NoteBody {
     @Composable
     override fun Draw(modifier: Modifier) {

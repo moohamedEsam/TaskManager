@@ -3,6 +3,7 @@ package com.example.taskmanager.presentation.utils.noteBody
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
+@kotlinx.serialization.Serializable
 sealed interface NoteBody {
     @Composable
     fun Draw(modifier: Modifier)

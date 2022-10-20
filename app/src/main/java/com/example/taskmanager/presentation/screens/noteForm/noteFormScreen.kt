@@ -1,5 +1,7 @@
 package com.example.taskmanager.presentation.screens.noteForm
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,14 +10,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 import com.example.taskmanager.presentation.utils.noteBodyProvider.*
 import com.example.taskmanager.ui.theme.TaskManagerTheme
 import org.koin.androidx.compose.koinViewModel
@@ -28,22 +30,36 @@ fun NoteFormScreen(
     noteId: String,
     viewModel: NoteFormViewModel = koinViewModel(parameters = { parametersOf(noteId) })
 ) {
-    NoteFormScreenContent(viewModel)
+    NoteFormScreenContent(
+        viewModel = viewModel
+    )
 }
 
 @Composable
 fun NoteFormScreenContent(viewModel: NoteFormViewModel) {
     val noteBodies by viewModel.noteBodies.collectAsState()
+    val showButtons by viewModel.showActionButtons.collectAsState()
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .animateContentSize()
         ) {
+            item {
+                NoteTitle(viewModel)
+            }
             items(noteBodies) { noteBody ->
                 noteBody.Draw(modifier = Modifier) {
                     viewModel.removeNoteBody(noteBody)
                 }
             }
+            if (showButtons)
+                item {
+                    ActionRow {
+                        viewModel.saveNote()
+                    }
+                }
         }
         ToolBoxRow(
             modifier = Modifier.align(Alignment.BottomCenter),
@@ -55,6 +71,42 @@ fun NoteFormScreenContent(viewModel: NoteFormViewModel) {
             onTableClick = { viewModel.addNoteBody(TableProvider(6)) },
             onImageClick = { viewModel.addNoteBody(ImageProvider()) }
         )
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun NoteTitle(viewModel: NoteFormViewModel) {
+    val note by viewModel.note.collectAsState()
+    val title by remember {
+        derivedStateOf {
+            note.title
+        }
+    }
+    TextField(
+        value = title,
+        onValueChange = { viewModel.updateNoteTitle(it) },
+        colors = getTransparentTextFieldColors(),
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = {
+            Text(
+                text = "Title",
+                fontSize = MaterialTheme.typography.headlineMedium.fontSize
+            )
+        },
+        textStyle = LocalTextStyle.current.copy(fontSize = 24.sp)
+    )
+}
+
+@Composable
+private fun ActionRow(onSave: () -> Unit = {}) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
+    ) {
+        Button(onClick = onSave) {
+            Text("Save")
+        }
     }
 }
 

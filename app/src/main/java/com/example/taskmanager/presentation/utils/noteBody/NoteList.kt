@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+@kotlinx.serialization.Serializable
 class NoteList(private val items: List<String>) : NoteBody {
     @Composable
     override fun Draw(modifier: Modifier) {

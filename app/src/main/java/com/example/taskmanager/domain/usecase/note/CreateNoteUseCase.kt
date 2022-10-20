@@ -8,5 +8,5 @@ import dev.krud.shapeshift.ShapeShift
 fun interface CreateNoteUseCase : suspend (NoteWithTagsDto) -> Resource<Unit>
 
 fun createNoteUseCase(repository: Repository, shapeShift: ShapeShift) = CreateNoteUseCase {
-    repository.addNote(shapeShift.map(it))
-}
+        repository.addNote(shapeShift.map(it))
+    }

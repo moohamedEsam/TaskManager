@@ -1,5 +1,7 @@
 package com.example.taskmanager.domain.usecase.note
 
+import android.util.Log
+import com.example.taskmanager.domain.dataModels.interfaces.NoteWithTags
 import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
 import com.example.taskmanager.domain.repository.Repository
 import dev.krud.shapeshift.ShapeShift

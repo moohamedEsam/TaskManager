@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 
+@kotlinx.serialization.Serializable
 class BulletList(private val items: List<String>) : NoteBody {
     @Composable
     override fun Draw(modifier: Modifier) {

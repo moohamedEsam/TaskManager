@@ -3,6 +3,7 @@ package com.example.taskmanager.presentation.utils.noteBodyProvider
 import android.Manifest
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -26,6 +27,7 @@ import org.koin.androidx.compose.get
 
 class ImageProvider() : NoteBodyProvider {
     private var imageBitmap = mutableStateOf<Bitmap?>(null)
+    private var path: Uri? = null
 
     @Composable
     override fun Draw(modifier: Modifier, onRemove: () -> Unit) {
@@ -35,6 +37,7 @@ class ImageProvider() : NoteBodyProvider {
                 contract = ActivityResultContracts.GetContent(),
             ) {
                 if (it == null) return@rememberLauncherForActivityResult
+                path = it
                 imageBitmap.value =
                     ImageDecoder.decodeBitmap(
                         ImageDecoder.createSource(
@@ -68,5 +71,5 @@ class ImageProvider() : NoteBodyProvider {
         }
     }
 
-    override fun getNoteBody(): NoteBody = NoteImage("")
+    override fun getNoteBody(): NoteBody = NoteImage(path.toString())
 }

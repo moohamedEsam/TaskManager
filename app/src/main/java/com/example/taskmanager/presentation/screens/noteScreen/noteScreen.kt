@@ -1,6 +1,5 @@
-package com.example.taskmanager.presentation.screens.notes
+package com.example.taskmanager.presentation.screens.noteScreen
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,27 +12,31 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.taskmanager.presentation.navigation.Screens
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
-fun NotesScreen(
+fun NoteDetailsScreen(
+    noteId: String,
     navHostController: NavHostController,
-    viewModel: NotesViewModel = koinViewModel()
+    viewModel: NoteDetailsViewModel = koinViewModel(parameters = { parametersOf(noteId) })
 ) {
-    val notes by viewModel.notes.collectAsState()
+    NoteScreenContent(viewModel = viewModel)
+}
 
+@Composable
+fun NoteScreenContent(viewModel: NoteDetailsViewModel) {
+    val note by viewModel.note.collectAsState()
+    if (note.data == null) return
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(notes) { note ->
-            Text(
-                text = note.title,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.clickable {
-                    navHostController.navigate(Screens.NoteDetailsScreen.withArgs(note.noteId))
-                })
+        item {
+            Text(text = note.data?.title ?: "", style = MaterialTheme.typography.headlineMedium)
+        }
+        items(note.data?.body ?: emptyList()) {
+            it.Draw(modifier = Modifier)
         }
     }
 }

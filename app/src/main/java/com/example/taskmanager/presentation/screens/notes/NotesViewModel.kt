@@ -1,5 +1,6 @@
 package com.example.taskmanager.presentation.screens.notes
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
@@ -21,7 +22,7 @@ class NotesViewModel(
 
     private fun observeNotes() = viewModelScope.launch {
         getNotesUseCase().collectLatest {
-            _notes.update { _ -> it }
+            _notes.value = it
         }
     }
 

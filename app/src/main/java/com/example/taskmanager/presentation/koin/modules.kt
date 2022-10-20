@@ -13,6 +13,7 @@ import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
 import com.example.taskmanager.domain.repository.Repository
 import com.example.taskmanager.domain.usecase.note.*
 import com.example.taskmanager.presentation.screens.noteForm.NoteFormViewModel
+import com.example.taskmanager.presentation.screens.noteScreen.NoteDetailsViewModel
 import com.example.taskmanager.presentation.screens.notes.NotesViewModel
 import dev.krud.shapeshift.ShapeShiftBuilder
 import dev.krud.shapeshift.enums.AutoMappingStrategy
@@ -28,6 +29,7 @@ val noteModule = module {
     single { getNotesUseCase(get(), get()) }
     single { getNoteByIdUseCase(get(), get()) }
     viewModel { NotesViewModel(get(), get()) }
+    viewModel { params -> NoteDetailsViewModel(get(), params[0]) }
     viewModel { params -> NoteFormViewModel(params[0], get(), get(), get()) }
 }
 
@@ -45,6 +47,9 @@ fun provideShapeShift() = ShapeShiftBuilder()
         autoMap(AutoMappingStrategy.BY_NAME_AND_TYPE)
     }
     .withMapping<NoteWithTagsDto, NoteWithTagsEntity> {
+        autoMap(AutoMappingStrategy.BY_NAME_AND_TYPE)
+    }
+    .withMapping<NoteWithTagsEntity, NoteWithTagsDto> {
         autoMap(AutoMappingStrategy.BY_NAME_AND_TYPE)
     }
     .build()

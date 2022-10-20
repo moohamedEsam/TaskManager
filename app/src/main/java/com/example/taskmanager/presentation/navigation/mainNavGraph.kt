@@ -8,10 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.Navigation
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.taskmanager.presentation.screens.noteForm.NoteFormScreen
+import com.example.taskmanager.presentation.screens.noteScreen.NoteDetailsScreen
 import com.example.taskmanager.presentation.screens.notes.NotesScreen
 
 @Composable
@@ -39,6 +39,11 @@ fun Navigation(
                 snackbarHostState = snackbarHostState,
                 noteId = noteId
             )
+        }
+
+        composable("${Screens.NoteDetailsScreen.route}/{noteId}") {
+            val noteId = it.arguments?.getString("noteId") ?: "   "
+            NoteDetailsScreen(noteId = noteId, navHostController = navHostController)
         }
     }
 }
