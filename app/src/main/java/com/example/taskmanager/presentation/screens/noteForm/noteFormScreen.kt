@@ -1,7 +1,6 @@
 package com.example.taskmanager.presentation.screens.noteForm
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,20 +15,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
+import com.example.taskmanager.presentation.utils.handleEvent
 import com.example.taskmanager.presentation.utils.noteBodyProvider.*
 import com.example.taskmanager.ui.theme.TaskManagerTheme
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 fun NoteFormScreen(
-    navHostController: NavHostController,
     snackbarHostState: SnackbarHostState,
     noteId: String,
     viewModel: NoteFormViewModel = koinViewModel(parameters = { parametersOf(noteId) })
 ) {
+    LaunchedEffect(key1 = Unit) {
+        viewModel.receiveChannel.collectLatest {
+            snackbarHostState.handleEvent(it)
+        }
+    }
     NoteFormScreenContent(
         viewModel = viewModel
     )

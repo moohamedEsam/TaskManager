@@ -1,5 +1,6 @@
-package com.example.taskmanager.presentation.screens.noteScreen
+package com.example.taskmanager.presentation.screens.noteDetailsScreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.domain.dataModels.Resource

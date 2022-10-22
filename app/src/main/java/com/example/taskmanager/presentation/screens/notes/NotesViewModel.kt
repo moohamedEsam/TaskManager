@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
 import com.example.taskmanager.domain.usecase.note.DeleteNoteUseCase
 import com.example.taskmanager.domain.usecase.note.GetNotesUseCase
+import com.example.taskmanager.presentation.utils.noteBody.NoteImage
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 

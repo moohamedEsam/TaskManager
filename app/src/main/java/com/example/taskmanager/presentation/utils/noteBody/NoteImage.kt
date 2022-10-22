@@ -8,11 +8,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
-import java.io.File
+import com.example.taskmanager.presentation.utils.noteBodyProvider.ImageProvider
+import com.example.taskmanager.presentation.utils.noteBodyProvider.NoteBodyProvider
 
 @kotlinx.serialization.Serializable
-class NoteImage(private val path: String?) : NoteBody {
+class NoteImage(override var uriString: String) : NoteMedia {
+
     @Composable
     override fun Draw(modifier: Modifier) {
         val context = LocalContext.current
@@ -21,7 +24,7 @@ class NoteImage(private val path: String?) : NoteBody {
                 ImageDecoder.decodeBitmap(
                     ImageDecoder.createSource(
                         context.contentResolver,
-                        Uri.parse(path ?: "")
+                        uriString.toUri()
                     )
                 )
             )
@@ -32,5 +35,7 @@ class NoteImage(private val path: String?) : NoteBody {
             modifier = modifier
         )
     }
+
+    override fun getProvider(): NoteBodyProvider = ImageProvider(Uri.parse(uriString))
 
 }

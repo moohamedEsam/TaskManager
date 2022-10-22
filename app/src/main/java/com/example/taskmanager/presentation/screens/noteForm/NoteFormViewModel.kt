@@ -1,15 +1,16 @@
 package com.example.taskmanager.presentation.screens.noteForm
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.domain.dataModels.Resource
+import com.example.taskmanager.domain.dataModels.SnackBarEvent
 import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
 import com.example.taskmanager.domain.usecase.note.CreateNoteUseCase
 import com.example.taskmanager.domain.usecase.note.GetNoteByIdUseCase
 import com.example.taskmanager.domain.usecase.note.UpdateNoteUseCase
 import com.example.taskmanager.presentation.utils.noteBodyProvider.NoteBodyProvider
-import com.example.taskmanager.presentation.utils.noteBody.NoteText
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -27,15 +28,19 @@ class NoteFormViewModel(
         _noteBodies.map { it.isNotEmpty() }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
+    private val snackBarChannel = Channel<SnackBarEvent>()
+    val receiveChannel = snackBarChannel.receiveAsFlow()
+
     init {
         getNote()
     }
 
     private fun getNote() = viewModelScope.launch {
         if (noteId.isNotBlank()) {
-            getNoteByIdUseCase(noteId).collectLatest {
-                if (it == null) return@collectLatest
-                _note.update { _ -> it }
+            getNoteByIdUseCase(noteId).collectLatest {noteWithTagsDto->
+                if (noteWithTagsDto == null) return@collectLatest
+                _note.update { _ -> noteWithTagsDto }
+                _noteBodies.update { _ -> noteWithTagsDto.body.map { it.getProvider() } }
             }
         }
     }
@@ -48,15 +53,19 @@ class NoteFormViewModel(
         _noteBodies.update { it - noteBody }
     }
 
-    fun saveNote() = viewModelScope.launch {
+    fun saveNote(): Job = viewModelScope.launch {
         _note.update {
             it.copy(
                 body = _noteBodies.value.map { noteBody -> noteBody.getNoteBody() }
             )
         }
-        val result = createNoteUseCase(_note.value)
-        if (result is Resource.Error)
-            Log.e("NoteFormViewModel", "saveNote: ${result.message}")
+        val event = when (val result = createNoteUseCase(_note.value)) {
+            is Resource.Error -> SnackBarEvent(result.message ?: "") { saveNote() }
+            is Resource.Success -> SnackBarEvent("note has been saved", null)
+            else -> null
+        }
+        if (event != null)
+            snackBarChannel.send(event)
     }
 
     fun updateNoteTitle(value: String) {

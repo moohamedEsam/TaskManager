@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,26 +26,29 @@ import com.example.taskmanager.presentation.utils.noteBody.NoteBody
 import com.example.taskmanager.presentation.utils.noteBody.NoteImage
 import org.koin.androidx.compose.get
 
-class ImageProvider() : NoteBodyProvider {
+class ImageProvider(initialPath: Uri? = null) :
+    NoteBodyProvider {
     private var imageBitmap = mutableStateOf<Bitmap?>(null)
-    private var path: Uri? = null
+    private val uri = mutableStateOf(initialPath)
 
     @Composable
     override fun Draw(modifier: Modifier, onRemove: () -> Unit) {
         RemovableNoteBody(onRemove = onRemove) {
             val context = LocalContext.current
-            val imageLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.GetContent(),
-            ) {
-                if (it == null) return@rememberLauncherForActivityResult
-                path = it
+            LaunchedEffect(key1 = uri.value) {
+                if (uri.value == null) return@LaunchedEffect
                 imageBitmap.value =
                     ImageDecoder.decodeBitmap(
                         ImageDecoder.createSource(
                             context.contentResolver,
-                            it
+                            uri.value!!
                         )
                     )
+            }
+            val imageLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.GetContent(),
+            ) {
+                uri.value = it
             }
             val permissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission(),
@@ -71,5 +75,5 @@ class ImageProvider() : NoteBodyProvider {
         }
     }
 
-    override fun getNoteBody(): NoteBody = NoteImage(path.toString())
+    override fun getNoteBody(): NoteBody = NoteImage(uri.value?.toString() ?: Uri.EMPTY.toString())
 }

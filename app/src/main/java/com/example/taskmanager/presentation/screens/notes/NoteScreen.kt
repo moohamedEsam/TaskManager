@@ -12,13 +12,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.example.taskmanager.presentation.navigation.Screens
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun NotesScreen(
-    navHostController: NavHostController,
+    onNoteClick: (String) -> Unit = {},
     viewModel: NotesViewModel = koinViewModel()
 ) {
     val notes by viewModel.notes.collectAsState()
@@ -32,7 +30,7 @@ fun NotesScreen(
                 text = note.title,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.clickable {
-                    navHostController.navigate(Screens.NoteDetailsScreen.withArgs(note.noteId))
+                    onNoteClick(note.noteId)
                 })
         }
     }

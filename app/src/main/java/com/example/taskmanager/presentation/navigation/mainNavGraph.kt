@@ -11,7 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.taskmanager.presentation.screens.noteForm.NoteFormScreen
-import com.example.taskmanager.presentation.screens.noteScreen.NoteDetailsScreen
+import com.example.taskmanager.presentation.screens.noteDetailsScreen.NoteDetailsScreen
 import com.example.taskmanager.presentation.screens.notes.NotesScreen
 
 @Composable
@@ -29,13 +29,16 @@ fun Navigation(
             .padding(vertical = 8.dp)
     ) {
         composable(Screens.NotesScreen.route) {
-            NotesScreen(navHostController = navHostController)
+            NotesScreen(
+                onNoteClick = {
+                    navHostController.navigate(Screens.NoteDetailsScreen.withArgs(it))
+                }
+            )
         }
 
         composable("${Screens.CreateNoteScreen.route}/{noteId}") {
             val noteId = it.arguments?.getString("noteId") ?: "   "
             NoteFormScreen(
-                navHostController = navHostController,
                 snackbarHostState = snackbarHostState,
                 noteId = noteId
             )
@@ -43,7 +46,15 @@ fun Navigation(
 
         composable("${Screens.NoteDetailsScreen.route}/{noteId}") {
             val noteId = it.arguments?.getString("noteId") ?: "   "
-            NoteDetailsScreen(noteId = noteId, navHostController = navHostController)
+            NoteDetailsScreen(
+                noteId = noteId,
+                onBackClick = { navHostController.popBackStack() },
+                onEditClick = { id ->
+                    navHostController.navigate(
+                        Screens.CreateNoteScreen.withArgs(id)
+                    )
+                }
+            )
         }
     }
 }

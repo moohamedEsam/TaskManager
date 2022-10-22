@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.taskmanager.presentation.navigation.Navigation
 import com.example.taskmanager.presentation.navigation.Screens
@@ -31,12 +33,19 @@ fun MainLayout() {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                navHostController.navigate(Screens.CreateNoteScreen.withArgs("  "))
-            }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = null)
-            }
+            CreateNoteFloatingButton(navHostController)
         },
         floatingActionButtonPosition = FabPosition.End
     )
+}
+
+@Composable
+private fun CreateNoteFloatingButton(navHostController: NavHostController) {
+    val currentDestination by navHostController.currentBackStackEntryAsState()
+    if (currentDestination?.destination?.route != Screens.NotesScreen.route) return
+    FloatingActionButton(onClick = {
+        navHostController.navigate(Screens.CreateNoteScreen.withArgs("  "))
+    }) {
+        Icon(imageVector = Icons.Default.Add, contentDescription = null)
+    }
 }

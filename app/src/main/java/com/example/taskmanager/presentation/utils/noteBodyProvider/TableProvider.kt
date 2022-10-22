@@ -1,48 +1,37 @@
 package com.example.taskmanager.presentation.utils.noteBodyProvider
 
-import android.util.Log
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.example.taskmanager.presentation.composables.RemovableNoteBody
 import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 import com.example.taskmanager.presentation.utils.noteBody.NoteBody
 import com.example.taskmanager.presentation.utils.noteBody.NoteTable
-import com.example.taskmanager.presentation.utils.noteBody.NoteText
 
-class TableProvider(private val columns: Int) : NoteBodyProvider {
-    private var cells = mutableStateListOf(*Array(columns * 2) { "" })
-    private val tableTitle = mutableStateOf("")
+class TableProvider(
+    private val columns: Int,
+    tableTitle: String = "",
+    cells: List<String> = List(columns * 2) { "" }
+) :
+    NoteBodyProvider {
+    private var cells = mutableStateListOf(*cells.toTypedArray())
+    private val tableTitle = mutableStateOf(tableTitle)
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -124,6 +113,6 @@ class TableProvider(private val columns: Int) : NoteBodyProvider {
         }
     }
 
-    override fun getNoteBody(): NoteBody = NoteTable(columns, cells)
+    override fun getNoteBody(): NoteBody = NoteTable(columns, tableTitle.value, cells)
 
 }

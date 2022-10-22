@@ -13,7 +13,7 @@ import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
 import com.example.taskmanager.domain.repository.Repository
 import com.example.taskmanager.domain.usecase.note.*
 import com.example.taskmanager.presentation.screens.noteForm.NoteFormViewModel
-import com.example.taskmanager.presentation.screens.noteScreen.NoteDetailsViewModel
+import com.example.taskmanager.presentation.screens.noteDetailsScreen.NoteDetailsViewModel
 import com.example.taskmanager.presentation.screens.notes.NotesViewModel
 import dev.krud.shapeshift.ShapeShiftBuilder
 import dev.krud.shapeshift.enums.AutoMappingStrategy
@@ -23,7 +23,7 @@ import org.koin.core.scope.Scope
 import org.koin.dsl.module
 
 val noteModule = module {
-    single { createNoteUseCase(get(), get()) }
+    single { createNoteUseCase(androidContext(), get(), get()) }
     single { updateNoteUseCase(get(), get()) }
     single { deleteNoteUseCase(get(), get()) }
     single { getNotesUseCase(get(), get()) }

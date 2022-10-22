@@ -9,8 +9,8 @@ import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 import com.example.taskmanager.presentation.utils.noteBody.NoteBody
 import com.example.taskmanager.presentation.utils.noteBody.NoteText
 
-class TextProvider : NoteBodyProvider {
-    private var textState = mutableStateOf("")
+class TextProvider(initialText: String = "") : NoteBodyProvider {
+    private var textState = mutableStateOf(initialText)
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable

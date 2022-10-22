@@ -16,10 +16,14 @@ import com.example.taskmanager.presentation.composables.RemovableNoteBody
 import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 import com.example.taskmanager.presentation.utils.noteBody.*
 
-class ListProvider(private val listType: ListType) : NoteBodyProvider {
+class ListProvider(
+    private val listType: ListType,
+    listTitle: String = "",
+    collection: List<String> = emptyList()
+) : NoteBodyProvider {
 
-    private var collection = mutableStateListOf("")
-    private val listTitle = mutableStateOf("")
+    private var collection = mutableStateListOf(*collection.toTypedArray())
+    private val listTitle = mutableStateOf(listTitle)
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -88,12 +92,12 @@ class ListProvider(private val listType: ListType) : NoteBodyProvider {
         }
     }
 
-    override fun getNoteBody(): NoteBody = when (listType) {
-        ListType.Bullet -> BulletList(collection)
-        ListType.Numbered -> NumberedList(collection)
-        ListType.Check -> CheckList(collection.map { CheckList.CheckListItem(it, false) })
-        else -> NoteList(collection)
-    }
+    override fun getNoteBody(): NoteBody = NoteList(
+        listType = listType,
+        title = listTitle.value,
+        items = collection
+    )
+
 
     @Composable
     @OptIn(ExperimentalMaterial3Api::class)
