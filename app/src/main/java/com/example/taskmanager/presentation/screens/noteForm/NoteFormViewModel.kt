@@ -37,7 +37,7 @@ class NoteFormViewModel(
 
     private fun getNote() = viewModelScope.launch {
         if (noteId.isNotBlank()) {
-            getNoteByIdUseCase(noteId).collectLatest {noteWithTagsDto->
+            getNoteByIdUseCase(noteId).collectLatest { noteWithTagsDto ->
                 if (noteWithTagsDto == null) return@collectLatest
                 _note.update { _ -> noteWithTagsDto }
                 _noteBodies.update { _ -> noteWithTagsDto.body.map { it.getProvider() } }
@@ -59,7 +59,11 @@ class NoteFormViewModel(
                 body = _noteBodies.value.map { noteBody -> noteBody.getNoteBody() }
             )
         }
-        val event = when (val result = createNoteUseCase(_note.value)) {
+        val result = if (noteId.isBlank())
+            createNoteUseCase(_note.value)
+        else
+            updateNoteUseCase(_note.value)
+        val event = when (result) {
             is Resource.Error -> SnackBarEvent(result.message ?: "") { saveNote() }
             is Resource.Success -> SnackBarEvent("note has been saved", null)
             else -> null

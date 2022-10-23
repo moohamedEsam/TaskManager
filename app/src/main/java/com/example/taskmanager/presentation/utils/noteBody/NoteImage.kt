@@ -37,5 +37,8 @@ class NoteImage(override var uriString: String) : NoteMedia {
     }
 
     override fun getProvider(): NoteBodyProvider = ImageProvider(Uri.parse(uriString))
+    override fun toString(): String {
+        return "NoteImage(uriString='$uriString')"
+    }
 
 }

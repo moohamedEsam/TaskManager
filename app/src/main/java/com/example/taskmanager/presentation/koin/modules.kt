@@ -24,7 +24,7 @@ import org.koin.dsl.module
 
 val noteModule = module {
     single { createNoteUseCase(androidContext(), get(), get()) }
-    single { updateNoteUseCase(get(), get()) }
+    single { updateNoteUseCase(androidContext(), get(), get()) }
     single { deleteNoteUseCase(get(), get()) }
     single { getNotesUseCase(get(), get()) }
     single { getNoteByIdUseCase(get(), get()) }
