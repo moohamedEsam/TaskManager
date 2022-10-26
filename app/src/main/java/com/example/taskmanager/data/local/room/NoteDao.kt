@@ -33,6 +33,18 @@ interface NoteDao {
     @Update
     suspend fun updateNote(noteEntity: NoteEntity)
 
+    @Query("update notes set isFavorite=:isFavorite where noteId=:noteId")
+    suspend fun markNoteAsFavorite(noteId: String, isFavorite: Boolean)
+
+    @Query("update notes set isPinned=:isPinned where noteId=:noteId")
+    suspend fun markNoteAsPinned(noteId: String, isPinned: Boolean)
+
+    @Query("update notes set isArchived=:isArchived where noteId=:noteId")
+    suspend fun markNoteAsArchived(noteId: String, isArchived: Boolean)
+
+    @Query("update notes set isDeleted=:isDeleted where noteId=:noteId")
+    suspend fun markNoteAsDeleted(noteId: String, isDeleted: Boolean)
+
     @Insert
     suspend fun addTagToNote(note: NoteWithTagCrossRef)
 

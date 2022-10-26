@@ -29,9 +29,8 @@ fun NotesScreen(
             Text(
                 text = note.title,
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.clickable {
-                    onNoteClick(note.noteId)
-                })
+                modifier = Modifier.clickable { onNoteClick(note.noteId) }
+            )
         }
     }
 }

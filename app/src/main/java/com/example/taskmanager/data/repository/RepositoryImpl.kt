@@ -22,6 +22,18 @@ class RepositoryImpl(
         Resource.Error(e.message ?: "Unknown error")
     }
 
+    override suspend fun updateNoteFavorite(noteId: String, isFavorite: Boolean): Resource<Unit> =
+        mapResultToResource { noteDao.markNoteAsFavorite(noteId, isFavorite) }
+
+    override suspend fun updateNotePinned(noteId: String, isPinned: Boolean): Resource<Unit> =
+        mapResultToResource { noteDao.markNoteAsPinned(noteId, isPinned) }
+
+    override suspend fun updateNoteArchived(noteId: String, isArchived: Boolean): Resource<Unit> =
+        mapResultToResource { noteDao.markNoteAsArchived(noteId, isArchived) }
+
+    override suspend fun updateNoteDeleted(noteId: String, isDeleted: Boolean): Resource<Unit> =
+        mapResultToResource { noteDao.markNoteAsDeleted(noteId, isDeleted) }
+
     override fun getNotes(): Flow<List<NoteWithTags>> = noteDao.getNotes()
 
     override fun getNoteById(id: String): Flow<NoteWithTags?> = noteDao.getNoteById(id)

@@ -1,6 +1,5 @@
 package com.example.taskmanager.presentation.screens.noteDetailsScreen
 
-import android.app.ActionBar
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,11 +7,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Pin
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,11 +21,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.example.taskmanager.R
+import com.example.taskmanager.domain.dataModels.interfaces.NoteWithTags
+import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -55,9 +53,12 @@ fun NoteScreenContent(
     ) {
         item {
             ActionBar(
-                noteTitle = note.data?.title ?: "",
+                note = note.data!!,
                 onBackClick = onBackClick,
-                onEditClick = { onEditClick(note.data?.noteId ?: "  ") }
+                onEditClick = { onEditClick(note.data?.noteId ?: "  ") },
+                onDeleteClick = viewModel::onDeleteClick,
+                onFavoriteClick = viewModel::onFavoriteClick,
+                onPinClick = viewModel::onPinClick,
             )
         }
 
@@ -69,9 +70,12 @@ fun NoteScreenContent(
 
 @Composable
 private fun ActionBar(
-    noteTitle: String,
+    note: NoteWithTags,
     onBackClick: () -> Unit,
     onEditClick: () -> Unit,
+    onPinClick: () -> Unit = {},
+    onFavoriteClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -82,7 +86,7 @@ private fun ActionBar(
         IconButton(onClick = onBackClick) {
             Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
         }
-        Text(text = noteTitle, style = MaterialTheme.typography.headlineMedium)
+        Text(text = note.title, style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.weight(0.8f))
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -91,18 +95,25 @@ private fun ActionBar(
             IconButton(onClick = onEditClick) {
                 Icon(Icons.Outlined.Edit, contentDescription = "edit")
             }
-            IconButton(onClick = { }) {
+            IconButton(onClick = onPinClick) {
                 Icon(
                     painterResource(id = R.drawable.pin),
                     contentDescription = "pin",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
+                    tint = if (note.isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
             }
-            IconButton(onClick = { }) {
-                Icon(Icons.Outlined.FavoriteBorder, contentDescription = "favorite")
+            IconButton(onClick = onFavoriteClick) {
+                if (note.isFavorite)
+                    Icon(imageVector = Icons.Default.Favorite, contentDescription = "favorite")
+                else
+                    Icon(Icons.Outlined.FavoriteBorder, contentDescription = "favorite")
             }
-            IconButton(onClick = { }) {
-                Icon(imageVector = Icons.Outlined.Delete, contentDescription = "delete")
+            IconButton(onClick = onDeleteClick) {
+                if (note.isDeleted)
+                    Icon(Icons.Filled.Delete, contentDescription = "delete")
+                else
+                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "delete")
             }
         }
 

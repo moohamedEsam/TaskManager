@@ -12,5 +12,9 @@ interface Repository {
     suspend fun addNote(note: NoteWithTagsEntity): Resource<Unit>
     suspend fun addTag(tag: TagEntity): Resource<Unit>
     suspend fun updateNote(note: NoteWithTagsEntity): Resource<Unit>
+    suspend fun updateNoteFavorite(noteId: String, isFavorite: Boolean): Resource<Unit>
+    suspend fun updateNotePinned(noteId: String, isPinned: Boolean): Resource<Unit>
+    suspend fun updateNoteArchived(noteId: String, isArchived: Boolean): Resource<Unit>
+    suspend fun updateNoteDeleted(noteId: String, isDeleted: Boolean): Resource<Unit>
     suspend fun deleteNote(note: NoteWithTagsEntity): Resource<Unit>
 }
