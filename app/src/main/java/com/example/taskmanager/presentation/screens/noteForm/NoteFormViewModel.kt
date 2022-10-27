@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.domain.dataModels.Resource
 import com.example.taskmanager.domain.dataModels.SnackBarEvent
 import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
+import com.example.taskmanager.domain.dataModels.presentation.TagDto
 import com.example.taskmanager.domain.usecase.note.CreateNoteUseCase
 import com.example.taskmanager.domain.usecase.note.GetNoteByIdUseCase
 import com.example.taskmanager.domain.usecase.note.UpdateNoteUseCase
+import com.example.taskmanager.domain.usecase.tag.CreateTagUseCase
 import com.example.taskmanager.presentation.utils.noteBodyProvider.NoteBodyProvider
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -18,7 +20,8 @@ class NoteFormViewModel(
     private val noteId: String,
     private val createNoteUseCase: CreateNoteUseCase,
     private val updateNoteUseCase: UpdateNoteUseCase,
-    private val getNoteByIdUseCase: GetNoteByIdUseCase
+    private val getNoteByIdUseCase: GetNoteByIdUseCase,
+    private val createTagUseCase: CreateTagUseCase
 ) : ViewModel() {
     private val _note = MutableStateFlow(NoteWithTagsDto())
     val note = _note.asStateFlow()
@@ -53,7 +56,7 @@ class NoteFormViewModel(
         _noteBodies.update { it - noteBody }
     }
 
-    fun saveNote(): Job = viewModelScope.launch {
+    fun saveNote(onNotedSaved: (String) -> Unit): Job = viewModelScope.launch {
         _note.update {
             it.copy(
                 body = _noteBodies.value.map { noteBody -> noteBody.getNoteBody() }
@@ -64,12 +67,22 @@ class NoteFormViewModel(
         else
             updateNoteUseCase(_note.value)
         val event = when (result) {
-            is Resource.Error -> SnackBarEvent(result.message ?: "") { saveNote() }
-            is Resource.Success -> SnackBarEvent("note has been saved", null)
+            is Resource.Error -> SnackBarEvent(result.message ?: "") { saveNote(onNotedSaved) }
+            is Resource.Success -> {
+                onNotedSaved(_note.value.noteId)
+                SnackBarEvent("note has been saved", null)
+            }
             else -> null
         }
         if (event != null)
             snackBarChannel.send(event)
+    }
+
+    fun createTag(tagName: String) = viewModelScope.launch {
+        createTagUseCase(TagDto(tagName))
+        _note.update {
+            it.copy(tags = it.tags + TagDto(tagName))
+        }
     }
 
     fun updateNoteTitle(value: String) {

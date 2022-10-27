@@ -19,7 +19,7 @@ import com.example.taskmanager.presentation.utils.noteBody.*
 class ListProvider(
     private val listType: ListType,
     listTitle: String = "",
-    collection: List<String> = emptyList()
+    collection: List<String> = listOf("")
 ) : NoteBodyProvider {
 
     private var collection = mutableStateListOf(*collection.toTypedArray())

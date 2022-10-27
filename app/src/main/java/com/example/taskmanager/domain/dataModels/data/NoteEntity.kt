@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.taskmanager.domain.dataModels.interfaces.Attachment
 import com.example.taskmanager.domain.dataModels.interfaces.Note
+import com.example.taskmanager.domain.dataModels.presentation.NoteDto
 import com.example.taskmanager.presentation.utils.noteBody.NoteBody
 import java.util.*
 
@@ -21,4 +22,17 @@ data class NoteEntity(
 
     @PrimaryKey
     override val noteId: String = UUID.randomUUID().toString()
-) : Note
+) : Note{
+    fun toDomain() = NoteDto(
+        body = body,
+        attachments = attachments,
+        isFavorite = isFavorite,
+        creationDate = creationDate,
+        isDeleted = isDeleted,
+        isPinned = isPinned,
+        lastEditDate = lastEditDate,
+        isArchived = isArchived,
+        noteId = noteId,
+        title = title
+    )
+}

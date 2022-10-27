@@ -2,19 +2,16 @@ package com.example.taskmanager.data.repository
 
 import com.example.taskmanager.data.local.room.NoteDao
 import com.example.taskmanager.data.local.room.TagDao
+import com.example.taskmanager.domain.dataModels.Resource
 import com.example.taskmanager.domain.dataModels.data.NoteWithTagCrossRef
 import com.example.taskmanager.domain.dataModels.data.NoteWithTagsEntity
-import com.example.taskmanager.domain.dataModels.Resource
 import com.example.taskmanager.domain.dataModels.data.TagEntity
-import com.example.taskmanager.domain.dataModels.interfaces.NoteWithTags
 import com.example.taskmanager.domain.repository.Repository
-import dev.krud.shapeshift.ShapeShift
 import kotlinx.coroutines.flow.Flow
 
 class RepositoryImpl(
     private val noteDao: NoteDao,
-    private val tagDao: TagDao,
-    private val shapeShift: ShapeShift
+    private val tagDao: TagDao
 ) : Repository {
     private suspend fun <T> mapResultToResource(result: suspend () -> T) = try {
         Resource.Success(result())
@@ -34,9 +31,9 @@ class RepositoryImpl(
     override suspend fun updateNoteDeleted(noteId: String, isDeleted: Boolean): Resource<Unit> =
         mapResultToResource { noteDao.markNoteAsDeleted(noteId, isDeleted) }
 
-    override fun getNotes(): Flow<List<NoteWithTags>> = noteDao.getNotes()
+    override fun getNotes(): Flow<List<NoteWithTagsEntity>> = noteDao.getNotes()
 
-    override fun getNoteById(id: String): Flow<NoteWithTags?> = noteDao.getNoteById(id)
+    override fun getNoteById(id: String): Flow<NoteWithTagsEntity?> = noteDao.getNoteById(id)
 
     override suspend fun addTag(tag: TagEntity): Resource<Unit> = mapResultToResource {
         tagDao.insertTag(tag)
@@ -44,19 +41,19 @@ class RepositoryImpl(
 
     override suspend fun addNote(note: NoteWithTagsEntity): Resource<Unit> =
         mapResultToResource {
-            noteDao.insertNote(shapeShift.map(note))
+            noteDao.insertNote(note.toNoteEntity())
             addNoteTag(note)
         }
 
     override suspend fun updateNote(note: NoteWithTagsEntity) = mapResultToResource {
-        noteDao.updateNote(shapeShift.map(note))
+        noteDao.updateNote(note.toNoteEntity())
         noteDao.deleteNoteTags(note.noteId)
         addNoteTag(note)
     }
 
     override suspend fun deleteNote(note: NoteWithTagsEntity): Resource<Unit> =
         mapResultToResource {
-            noteDao.deleteNoteById(shapeShift.map(note))
+            noteDao.deleteNoteById(note.toNoteEntity())
             noteDao.deleteNoteTags(note.noteId)
         }
 

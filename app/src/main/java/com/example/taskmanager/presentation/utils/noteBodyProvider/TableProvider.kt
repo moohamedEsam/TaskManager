@@ -8,6 +8,9 @@ import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.TableView
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -17,6 +20,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.example.taskmanager.presentation.composables.RemovableNoteBody
@@ -25,13 +29,14 @@ import com.example.taskmanager.presentation.utils.noteBody.NoteBody
 import com.example.taskmanager.presentation.utils.noteBody.NoteTable
 
 class TableProvider(
-    private val columns: Int,
+    columns: Int = 1,
     tableTitle: String = "",
     cells: List<String> = List(columns * 2) { "" }
 ) :
     NoteBodyProvider {
     private var cells = mutableStateListOf(*cells.toTypedArray())
     private val tableTitle = mutableStateOf(tableTitle)
+    private var columnsState = mutableStateOf(columns)
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -46,6 +51,9 @@ class TableProvider(
                 val title by remember {
                     tableTitle
                 }
+                val columns by remember {
+                    columnsState
+                }
                 TextField(
                     value = title,
                     onValueChange = { tableTitle.value = it },
@@ -55,7 +63,6 @@ class TableProvider(
                     maxLines = 1,
                     modifier = Modifier.fillMaxWidth()
                 )
-
                 val columnState = rememberLazyListState()
                 val horizontalFirstVisibleItemIndex = mutableStateOf(0)
                 val horizontalFirstVisibleItemScrollOffset = mutableStateOf(0)
@@ -108,11 +115,27 @@ class TableProvider(
                             }
                         }
                     }
+                    item {
+                        IconButton(
+                            onClick = {
+                                columnsState.value++
+                                cells.addAll(Array(columns) { "" })
+                            },
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .border(1.dp, Color.LightGray)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add column"
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 
-    override fun getNoteBody(): NoteBody = NoteTable(columns, tableTitle.value, cells)
+    override fun getNoteBody(): NoteBody = NoteTable(columnsState.value, tableTitle.value, cells)
 
 }

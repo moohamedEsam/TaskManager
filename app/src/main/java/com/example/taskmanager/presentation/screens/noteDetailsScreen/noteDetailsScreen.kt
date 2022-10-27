@@ -25,7 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.taskmanager.R
 import com.example.taskmanager.domain.dataModels.interfaces.NoteWithTags
-import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -79,7 +78,9 @@ private fun ActionBar(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -88,35 +89,32 @@ private fun ActionBar(
         }
         Text(text = note.title, style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.weight(0.8f))
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.horizontalScroll(rememberScrollState())
-        ) {
-            IconButton(onClick = onEditClick) {
-                Icon(Icons.Outlined.Edit, contentDescription = "edit")
-            }
-            IconButton(onClick = onPinClick) {
-                Icon(
-                    painterResource(id = R.drawable.pin),
-                    contentDescription = "pin",
-                    modifier = Modifier.size(24.dp),
-                    tint = if (note.isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                )
-            }
-            IconButton(onClick = onFavoriteClick) {
-                if (note.isFavorite)
-                    Icon(imageVector = Icons.Default.Favorite, contentDescription = "favorite")
-                else
-                    Icon(Icons.Outlined.FavoriteBorder, contentDescription = "favorite")
-            }
-            IconButton(onClick = onDeleteClick) {
-                if (note.isDeleted)
-                    Icon(Icons.Filled.Delete, contentDescription = "delete")
-                else
-                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "delete")
-            }
-        }
 
+        IconButton(onClick = onEditClick) {
+            Icon(Icons.Outlined.Edit, contentDescription = "edit")
+        }
+        IconButton(onClick = onPinClick) {
+            Icon(
+                painter = if (note.isPinned)
+                    painterResource(id = R.drawable.pin_filled)
+                else
+                    painterResource(id = R.drawable.pin),
+                contentDescription = "pin",
+                modifier = Modifier.size(24.dp)
+            )
+        }
+        IconButton(onClick = onFavoriteClick) {
+            if (note.isFavorite)
+                Icon(imageVector = Icons.Default.Favorite, contentDescription = "favorite")
+            else
+                Icon(Icons.Outlined.FavoriteBorder, contentDescription = "favorite")
+        }
+        IconButton(onClick = onDeleteClick) {
+            if (note.isDeleted)
+                Icon(Icons.Filled.Delete, contentDescription = "delete")
+            else
+                Icon(imageVector = Icons.Outlined.Delete, contentDescription = "delete")
+        }
 
     }
 }

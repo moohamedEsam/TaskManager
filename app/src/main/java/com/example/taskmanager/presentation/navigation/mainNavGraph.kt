@@ -40,7 +40,14 @@ fun Navigation(
             val noteId = it.arguments?.getString("noteId") ?: "   "
             NoteFormScreen(
                 snackbarHostState = snackbarHostState,
-                noteId = noteId
+                noteId = noteId,
+                onNoteSaved = { id ->
+                    navHostController.navigate(
+                        Screens.NoteDetailsScreen.withArgs(
+                            id
+                        )
+                    )
+                }
             )
         }
 

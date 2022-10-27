@@ -5,11 +5,10 @@ import com.example.taskmanager.domain.dataModels.Resource
 import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
 import com.example.taskmanager.domain.repository.Repository
 import com.example.taskmanager.presentation.utils.noteBody.NoteMedia
-import dev.krud.shapeshift.ShapeShift
 
 fun interface UpdateNoteUseCase : suspend (NoteWithTagsDto) -> Resource<Unit>
 
-fun updateNoteUseCase(context: Context, repository: Repository, shapeShift: ShapeShift) =
+fun updateNoteUseCase(context: Context, repository: Repository) =
     UpdateNoteUseCase { noteWithTags ->
         val containsMedia = noteWithTags.body.find { it is NoteMedia } != null
         if (!containsMedia)
@@ -20,5 +19,5 @@ fun updateNoteUseCase(context: Context, repository: Repository, shapeShift: Shap
                 noteWithTags = noteWithTags
             )
 
-        repository.updateNote(shapeShift.map(noteWithTags))
+        repository.updateNote(noteWithTags.toEntity())
     }

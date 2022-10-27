@@ -110,8 +110,6 @@ dependencies {
     // serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
 
-    //shape shift
-    implementation("dev.krud:shapeshift:0.6.0")
 
     //test
     val truthVersion: String by rootProject.extra
