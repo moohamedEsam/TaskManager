@@ -2,6 +2,7 @@ package com.example.taskmanager.presentation.screens.shared
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,7 +36,15 @@ fun MainLayout() {
         floatingActionButton = {
             CreateNoteFloatingButton(navHostController)
         },
-        floatingActionButtonPosition = FabPosition.End
+        floatingActionButtonPosition = FabPosition.End,
+        topBar = {
+            TopAppBar(title = { Text("Task Manager") }, navigationIcon = {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = null
+                )
+            })
+        }
     )
 }
 

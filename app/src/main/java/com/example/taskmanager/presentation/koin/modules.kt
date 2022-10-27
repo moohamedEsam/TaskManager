@@ -33,7 +33,7 @@ val noteModule = module {
     single { UpdateNotePinUseCase(get<Repository>()::updateNotePinned) }
     single { UpdateNoteFavoriteUseCase(get<Repository>()::updateNoteFavorite) }
     single { UpdateNoteDeleteUseCase(get<Repository>()::updateNoteDeleted) }
-    viewModel { NotesViewModel(get(), get()) }
+    viewModel { NotesViewModel(get(), get(), get(), get(), get()) }
     viewModel { params -> NoteDetailsViewModel(get(), get(), get(), get(), get(), params[0]) }
     viewModel { params -> NoteFormViewModel(params[0], get(), get(), get(), get()) }
 }
