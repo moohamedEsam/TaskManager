@@ -13,6 +13,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.taskmanager.presentation.navigation.Navigation
 import com.example.taskmanager.presentation.navigation.Screens
+import com.example.taskmanager.presentation.screens.noteForm.navigateToNoteFormScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,7 +54,7 @@ private fun CreateNoteFloatingButton(navHostController: NavHostController) {
     val currentDestination by navHostController.currentBackStackEntryAsState()
     if (currentDestination?.destination?.route != Screens.NotesScreen.route) return
     FloatingActionButton(onClick = {
-        navHostController.navigate(Screens.CreateNoteScreen.withArgs("  "))
+        navHostController.navigateToNoteFormScreen("    ")
     }) {
         Icon(imageVector = Icons.Default.Add, contentDescription = null)
     }

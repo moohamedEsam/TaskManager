@@ -1,12 +1,8 @@
 package com.example.taskmanager.domain.usecase.tag
 
-import com.example.taskmanager.domain.dataModels.Resource
-import com.example.taskmanager.domain.dataModels.data.TagEntity
-import com.example.taskmanager.domain.dataModels.presentation.TagDto
-import com.example.taskmanager.domain.repository.Repository
+import com.example.taskmanager.domain.models.Resource
+import com.example.taskmanager.domain.models.Tag
+import com.example.taskmanager.domain.models.asEntity
+import com.example.taskmanager.domain.repository.TagRepository
 
-fun interface CreateTagUseCase : suspend (TagDto) -> Resource<Unit>
-
-fun createTagUseCase(repository: Repository) = CreateTagUseCase {
-    repository.addTag(it.toEntity())
-}
+fun interface CreateTagUseCase : suspend (Tag) -> Resource<Unit>

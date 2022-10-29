@@ -3,7 +3,7 @@ package com.example.taskmanager.domain.usecase.note
 import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
-import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
+import com.example.taskmanager.domain.models.NoteWithTags
 import com.example.taskmanager.presentation.utils.noteBody.NoteMedia
 import java.io.File
 import java.util.*
@@ -27,7 +27,7 @@ fun copyMediaFile(
 
 fun createNoteDirIfNoteExist(
     context: Context,
-    noteWithTags: NoteWithTagsDto
+    noteWithTags: NoteWithTags
 ): File {
     val noteDir = getNoteDir(context, noteWithTags.noteId)
     if (!noteDir.exists())
@@ -37,7 +37,7 @@ fun createNoteDirIfNoteExist(
 
 fun deleteNoteDir(
     context: Context,
-    noteWithTags: NoteWithTagsDto
+    noteWithTags: NoteWithTags
 ) {
     val noteDir = getNoteDir(context, noteWithTags.noteId)
     if (noteDir.exists())
@@ -46,7 +46,7 @@ fun deleteNoteDir(
 
 fun updateNoteDirAndBody(
     context: Context,
-    noteWithTags: NoteWithTagsDto
+    noteWithTags: NoteWithTags
 ) {
     val noteDir = createNoteDirIfNoteExist(context, noteWithTags)
     val currentNoteFiles = mutableSetOf<String>()

@@ -12,10 +12,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,7 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.taskmanager.R
-import com.example.taskmanager.domain.dataModels.interfaces.NoteWithTags
+import com.example.taskmanager.domain.models.Resource
+import com.example.taskmanager.domain.models.NoteWithTags
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -35,33 +33,83 @@ fun NoteDetailsScreen(
     onEditClick: (String) -> Unit = {},
     viewModel: NoteDetailsViewModel = koinViewModel(parameters = { parametersOf(noteId) })
 ) {
-    NoteScreenContent(viewModel = viewModel, onBackClick = onBackClick, onEditClick = onEditClick)
+    val note by viewModel.note.collectAsState()
+
+    NoteDetailsScreen(
+        onBackClick = onBackClick,
+        onEditClick = onEditClick,
+        uiState = note,
+        onFavoriteClick = viewModel::onFavoriteClick,
+        onDeleteClick = viewModel::onDeleteClick,
+        onPinClick = viewModel::onPinClick,
+    )
 }
 
 @Composable
-fun NoteScreenContent(
-    viewModel: NoteDetailsViewModel,
-    onBackClick: () -> Unit,
-    onEditClick: (String) -> Unit
+fun NoteDetailsScreen(
+    uiState: Resource<NoteWithTags>,
+    onBackClick: () -> Unit = {},
+    onEditClick: (String) -> Unit = {},
+    onDeleteClick: () -> Unit = {},
+    onFavoriteClick: () -> Unit = {},
+    onPinClick: () -> Unit = {},
 ) {
-    val note by viewModel.note.collectAsState()
-    if (note.data == null) return
+    when (uiState) {
+        is Resource.Error -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = uiState.message ?: "something went wrong",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+        is Resource.Initial -> Unit
+        is Resource.Loading -> Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        is Resource.Success -> NoteScreenContent(
+            uiState = uiState,
+            onBackClick = onBackClick,
+            onEditClick = onEditClick,
+            onFavoriteClick = onFavoriteClick,
+            onDeleteClick = onDeleteClick,
+            onPinClick = onPinClick
+        )
+    }
+}
+
+@Composable
+private fun NoteScreenContent(
+    uiState: Resource<NoteWithTags>,
+    onBackClick: () -> Unit,
+    onEditClick: (String) -> Unit,
+    onFavoriteClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onPinClick: () -> Unit
+) {
+    if (uiState.data == null) return
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item {
             ActionBar(
-                note = note.data!!,
+                note = uiState.data,
                 onBackClick = onBackClick,
-                onEditClick = { onEditClick(note.data?.noteId ?: "  ") },
-                onDeleteClick = viewModel::onDeleteClick,
-                onFavoriteClick = viewModel::onFavoriteClick,
-                onPinClick = viewModel::onPinClick,
+                onEditClick = { onEditClick(uiState.data.noteId) },
+                onDeleteClick = onDeleteClick,
+                onFavoriteClick = onFavoriteClick,
+                onPinClick = onPinClick,
             )
         }
 
-        items(note.data?.body ?: emptyList()) {
+        items(uiState.data.body) {
             it.Draw(modifier = Modifier)
         }
     }

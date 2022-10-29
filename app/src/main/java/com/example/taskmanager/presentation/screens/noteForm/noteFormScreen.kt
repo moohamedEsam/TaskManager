@@ -15,13 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.taskmanager.domain.dataModels.interfaces.Tag
-import com.example.taskmanager.domain.dataModels.presentation.TagDto
-import com.example.taskmanager.presentation.composables.AddTagToNote
+import com.example.taskmanager.presentation.composables.TagDialog
 import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 import com.example.taskmanager.presentation.utils.handleEvent
 import com.example.taskmanager.presentation.utils.noteBodyProvider.*
 import com.example.taskmanager.ui.theme.TaskManagerTheme
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -30,7 +29,6 @@ import org.koin.core.parameter.parametersOf
 fun NoteFormScreen(
     snackbarHostState: SnackbarHostState,
     noteId: String,
-    onNoteSaved: (String) -> Unit,
     viewModel: NoteFormViewModel = koinViewModel(parameters = { parametersOf(noteId) })
 ) {
     LaunchedEffect(key1 = Unit) {
@@ -38,16 +36,42 @@ fun NoteFormScreen(
             snackbarHostState.handleEvent(it)
         }
     }
+    val noteBodies by viewModel.noteBodies.collectAsState()
+    val showSaveButton by viewModel.showActionButtons.collectAsState()
+
     NoteFormScreenContent(
-        viewModel = viewModel,
-        onNoteSaved = onNoteSaved
+        noteTitle = viewModel.noteTitle,
+        noteBodies = noteBodies,
+        showSaveButton = showSaveButton,
+        onTitleValueChanged = { viewModel.updateNoteTitle(it) },
+        onAddNoteBody = viewModel::addNoteBody,
+        onRemoveNoteBody = viewModel::removeNoteBody,
+        onToggleTagDialog = viewModel::toggleTagDialog,
+        onSaveNote = viewModel::saveNote
+    )
+
+    TagDialog(
+        showDialog = viewModel.showTagDialog,
+        tagsState = viewModel.tags,
+        onTagSelected = {},
+        onTagCreate = viewModel::createTag,
+        onDismiss = viewModel::toggleTagDialog
     )
 }
 
+
 @Composable
-fun NoteFormScreenContent(viewModel: NoteFormViewModel, onNoteSaved: (String) -> Unit) {
-    val noteBodies by viewModel.noteBodies.collectAsState()
-    val showButtons by viewModel.showActionButtons.collectAsState()
+fun NoteFormScreenContent(
+    noteTitle: StateFlow<String>,
+    noteBodies: List<NoteBodyProvider>,
+    showSaveButton: Boolean,
+    onTitleValueChanged: (String) -> Unit,
+    onAddNoteBody: (NoteBodyProvider) -> Unit,
+    onRemoveNoteBody: (NoteBodyProvider) -> Unit,
+    onToggleTagDialog: () -> Unit,
+    onSaveNote: () -> Unit,
+
+    ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -56,46 +80,40 @@ fun NoteFormScreenContent(viewModel: NoteFormViewModel, onNoteSaved: (String) ->
                 .animateContentSize()
         ) {
             item {
-                NoteTitle(viewModel)
+                NoteTitle(
+                    title = noteTitle,
+                    onTitleValueChanged = onTitleValueChanged
+                )
             }
             items(noteBodies) { noteBody ->
-                noteBody.Draw(modifier = Modifier) {
-                    viewModel.removeNoteBody(noteBody)
-                }
+                noteBody.Draw(modifier = Modifier, onRemove = { onRemoveNoteBody(noteBody) })
             }
-            if (showButtons)
+            if (showSaveButton)
                 item {
-                    ActionRow {
-                        viewModel.saveNote(onNoteSaved)
-                    }
+                    ActionRow(onSave = onSaveNote)
                 }
         }
         ToolBoxRow(
             modifier = Modifier.align(Alignment.BottomCenter),
-            onTitleClick = { viewModel.addNoteBody(TextProvider()) },
-            onListClick = { viewModel.addNoteBody(ListProvider(ListType.Normal)) },
-            onBulletListClick = { viewModel.addNoteBody(ListProvider(ListType.Bullet)) },
-            onNumberedListClick = { viewModel.addNoteBody(ListProvider(ListType.Numbered)) },
-            onCheckListClick = { viewModel.addNoteBody(ListProvider(ListType.Check)) },
-            onTableClick = { viewModel.addNoteBody(TableProvider()) },
-            onImageClick = { viewModel.addNoteBody(ImageProvider()) },
-            onCreateTag = viewModel::createTag
+            onTitleClick = { onAddNoteBody(TextProvider()) },
+            onListClick = { onAddNoteBody(ListProvider(ListType.Normal)) },
+            onBulletListClick = { onAddNoteBody(ListProvider(ListType.Bullet)) },
+            onNumberedListClick = { onAddNoteBody(ListProvider(ListType.Numbered)) },
+            onCheckListClick = { onAddNoteBody(ListProvider(ListType.Check)) },
+            onTableClick = { onAddNoteBody(TableProvider()) },
+            onImageClick = { onAddNoteBody(ImageProvider()) },
+            onTagClick = onToggleTagDialog
         )
     }
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun NoteTitle(viewModel: NoteFormViewModel) {
-    val note by viewModel.note.collectAsState()
-    val title by remember {
-        derivedStateOf {
-            note.title
-        }
-    }
+private fun NoteTitle(title: StateFlow<String>, onTitleValueChanged: (String) -> Unit) {
+    val value by title.collectAsState()
     TextField(
-        value = title,
-        onValueChange = { viewModel.updateNoteTitle(it) },
+        value = value,
+        onValueChange = onTitleValueChanged,
         colors = getTransparentTextFieldColors(),
         modifier = Modifier.fillMaxWidth(),
         placeholder = {
@@ -131,8 +149,7 @@ private fun ToolBoxRow(
     onImageClick: () -> Unit = {},
     onVideoClick: () -> Unit = {},
     onTableClick: () -> Unit = {},
-    onCreateTag: (String) -> Unit = {},
-    onAddTag: (Tag) -> Unit = {},
+    onTagClick: () -> Unit = {},
 ) {
     var showTagDialog by remember {
         mutableStateOf(false)
@@ -172,17 +189,11 @@ private fun ToolBoxRow(
                 Icon(imageVector = Icons.Default.TableView, contentDescription = null)
             }
             Spacer(modifier = Modifier.weight(0.8f))
-            IconButton(onClick = { showTagDialog = true }) {
+            IconButton(onClick = onTagClick) {
                 Icon(imageVector = Icons.Default.Label, contentDescription = null)
             }
         }
     }
-    if (showTagDialog)
-        AddTagToNote(
-            tags = emptyList(),
-            onTagSelected = onAddTag,
-            onTagCreate = onCreateTag,
-            onDismiss = { showTagDialog = false })
 }
 
 @Preview

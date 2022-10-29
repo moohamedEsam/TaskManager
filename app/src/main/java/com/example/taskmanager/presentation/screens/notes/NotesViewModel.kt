@@ -1,11 +1,9 @@
 package com.example.taskmanager.presentation.screens.notes
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
+import com.example.taskmanager.domain.models.NoteWithTags
 import com.example.taskmanager.domain.usecase.note.*
-import com.example.taskmanager.presentation.utils.noteBody.NoteImage
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -16,7 +14,7 @@ class NotesViewModel(
     private val updateFavoriteUseCase: UpdateNoteFavoriteUseCase,
     private val updatePinUseCase: UpdateNotePinUseCase
 ) : ViewModel() {
-    private val _notes = MutableStateFlow(emptyList<NoteWithTagsDto>())
+    private val _notes = MutableStateFlow(emptyList<NoteWithTags>())
     val notes = _notes.asStateFlow()
 
     init {
@@ -29,19 +27,19 @@ class NotesViewModel(
         }
     }
 
-    fun deleteNoteById(noteWithTags: NoteWithTagsDto) = viewModelScope.launch {
+    fun deleteNoteById(noteWithTags: NoteWithTags) = viewModelScope.launch {
         deleteNoteUseCase(noteWithTags)
     }
 
-    fun updateArchive(noteWithTags: NoteWithTagsDto) = viewModelScope.launch {
+    fun updateArchive(noteWithTags: NoteWithTags) = viewModelScope.launch {
         updateArchiveUseCase(noteWithTags.noteId, !noteWithTags.isArchived)
     }
 
-    fun updateFavorite(noteWithTags: NoteWithTagsDto) = viewModelScope.launch {
+    fun updateFavorite(noteWithTags: NoteWithTags) = viewModelScope.launch {
         updateFavoriteUseCase(noteWithTags.noteId, !noteWithTags.isFavorite)
     }
 
-    fun updatePin(noteWithTags: NoteWithTagsDto) = viewModelScope.launch {
+    fun updatePin(noteWithTags: NoteWithTags) = viewModelScope.launch {
         updatePinUseCase(noteWithTags.noteId, !noteWithTags.isPinned)
     }
 

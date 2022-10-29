@@ -1,8 +1,8 @@
 package com.example.taskmanager.data.local.room
 
 import androidx.room.*
-import com.example.taskmanager.domain.dataModels.data.TagEntity
-import com.example.taskmanager.domain.dataModels.data.TagWithNotesEntity
+import com.example.taskmanager.data.models.TagEntity
+import com.example.taskmanager.data.models.TagWithNotesEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

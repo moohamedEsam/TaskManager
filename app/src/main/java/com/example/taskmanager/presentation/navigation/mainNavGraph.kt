@@ -11,8 +11,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.taskmanager.presentation.screens.noteForm.NoteFormScreen
-import com.example.taskmanager.presentation.screens.noteDetailsScreen.NoteDetailsScreen
+import com.example.taskmanager.presentation.screens.noteDetailsScreen.navigateToNoteDetailsScreen
+import com.example.taskmanager.presentation.screens.noteDetailsScreen.noteDetailsScreen
+import com.example.taskmanager.presentation.screens.noteForm.noteFormScreen
 import com.example.taskmanager.presentation.screens.notes.NotesScreen
+import com.example.taskmanager.presentation.screens.notes.noteFormScreen
 
 @Composable
 fun Navigation(
@@ -28,40 +31,18 @@ fun Navigation(
             .padding(paddingValues)
             .padding(vertical = 8.dp)
     ) {
-        composable(Screens.NotesScreen.route) {
-            NotesScreen(
-                onNoteClick = {
-                    navHostController.navigate(Screens.NoteDetailsScreen.withArgs(it))
-                }
-            )
+
+        noteFormScreen {
+            navHostController.navigateToNoteDetailsScreen(it)
         }
 
-        composable("${Screens.CreateNoteScreen.route}/{noteId}") {
-            val noteId = it.arguments?.getString("noteId") ?: "   "
-            NoteFormScreen(
-                snackbarHostState = snackbarHostState,
-                noteId = noteId,
-                onNoteSaved = { id ->
-                    navHostController.navigate(
-                        Screens.NoteDetailsScreen.withArgs(
-                            id
-                        )
-                    )
-                }
-            )
-        }
+        noteFormScreen(snackbarHostState)
 
-        composable("${Screens.NoteDetailsScreen.route}/{noteId}") {
-            val noteId = it.arguments?.getString("noteId") ?: "   "
-            NoteDetailsScreen(
-                noteId = noteId,
-                onBackClick = { navHostController.popBackStack() },
-                onEditClick = { id ->
-                    navHostController.navigate(
-                        Screens.CreateNoteScreen.withArgs(id)
-                    )
-                }
-            )
-        }
+        noteDetailsScreen(
+            onBackClick = navHostController::popBackStack,
+            onEditClick = { id ->
+                navHostController.navigateToNoteDetailsScreen(id)
+            }
+        )
     }
 }

@@ -1,4 +1,4 @@
-package com.example.taskmanager.domain.dataModels.interfaces
+package com.example.taskmanager.domain.models
 
 import kotlinx.serialization.Serializable
 

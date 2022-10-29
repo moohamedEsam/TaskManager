@@ -2,14 +2,12 @@ package com.example.taskmanager.presentation.screens.noteForm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskmanager.domain.dataModels.Resource
-import com.example.taskmanager.domain.dataModels.SnackBarEvent
-import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
-import com.example.taskmanager.domain.dataModels.presentation.TagDto
+import com.example.taskmanager.domain.models.*
 import com.example.taskmanager.domain.usecase.note.CreateNoteUseCase
 import com.example.taskmanager.domain.usecase.note.GetNoteByIdUseCase
 import com.example.taskmanager.domain.usecase.note.UpdateNoteUseCase
 import com.example.taskmanager.domain.usecase.tag.CreateTagUseCase
+import com.example.taskmanager.domain.usecase.tag.GetTagsUseCase
 import com.example.taskmanager.presentation.utils.noteBodyProvider.NoteBodyProvider
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -21,10 +19,13 @@ class NoteFormViewModel(
     private val createNoteUseCase: CreateNoteUseCase,
     private val updateNoteUseCase: UpdateNoteUseCase,
     private val getNoteByIdUseCase: GetNoteByIdUseCase,
-    private val createTagUseCase: CreateTagUseCase
+    private val createTagUseCase: CreateTagUseCase,
+    private val getTagsUseCase: GetTagsUseCase
 ) : ViewModel() {
-    private val _note = MutableStateFlow(NoteWithTagsDto())
-    val note = _note.asStateFlow()
+    private val _noteTitle = MutableStateFlow("")
+    val noteTitle = _noteTitle.asStateFlow()
+    private val _tags = MutableStateFlow(emptyList<Tag>())
+    val tags = _tags.asStateFlow()
     private val _noteBodies = MutableStateFlow(emptyList<NoteBodyProvider>())
     val noteBodies = _noteBodies.asStateFlow()
     val showActionButtons =
@@ -34,17 +35,31 @@ class NoteFormViewModel(
     private val snackBarChannel = Channel<SnackBarEvent>()
     val receiveChannel = snackBarChannel.receiveAsFlow()
 
+    private val _showTagDialog = MutableStateFlow(false)
+    val showTagDialog = _showTagDialog.asStateFlow()
+
+    private val _noteTags = MutableStateFlow(emptySet<Tag>())
+    val noteTags = _noteTags.asStateFlow()
+
     init {
         getNote()
+        getTags()
     }
 
     private fun getNote() = viewModelScope.launch {
         if (noteId.isNotBlank()) {
             getNoteByIdUseCase(noteId).collectLatest { noteWithTagsDto ->
                 if (noteWithTagsDto == null) return@collectLatest
-                _note.update { _ -> noteWithTagsDto }
+                _noteTitle.update { noteWithTagsDto.title }
                 _noteBodies.update { _ -> noteWithTagsDto.body.map { it.getProvider() } }
+                _noteTags.update { _ -> noteWithTagsDto.tags.toSet() }
             }
+        }
+    }
+
+    private fun getTags() = viewModelScope.launch {
+        getTagsUseCase().collectLatest { tags ->
+            _tags.update { _ -> tags }
         }
     }
 
@@ -56,20 +71,20 @@ class NoteFormViewModel(
         _noteBodies.update { it - noteBody }
     }
 
-    fun saveNote(onNotedSaved: (String) -> Unit): Job = viewModelScope.launch {
-        _note.update {
-            it.copy(
-                body = _noteBodies.value.map { noteBody -> noteBody.getNoteBody() }
-            )
-        }
+    fun saveNote(): Job = viewModelScope.launch {
+        val note = NoteWithTags(
+            _noteTitle.value,
+            _noteBodies.value.map { it.getNoteBody() },
+            attachments = emptyList(),
+            tags = _noteTags.value.toList()
+        )
         val result = if (noteId.isBlank())
-            createNoteUseCase(_note.value)
+            createNoteUseCase(note)
         else
-            updateNoteUseCase(_note.value)
+            updateNoteUseCase(note)
         val event = when (result) {
-            is Resource.Error -> SnackBarEvent(result.message ?: "") { saveNote(onNotedSaved) }
+            is Resource.Error -> SnackBarEvent(result.message ?: "") { saveNote() }
             is Resource.Success -> {
-                onNotedSaved(_note.value.noteId)
                 SnackBarEvent("note has been saved", null)
             }
             else -> null
@@ -79,13 +94,16 @@ class NoteFormViewModel(
     }
 
     fun createTag(tagName: String) = viewModelScope.launch {
-        createTagUseCase(TagDto(tagName))
-        _note.update {
-            it.copy(tags = it.tags + TagDto(tagName))
-        }
+        val tag = Tag(tagName)
+        createTagUseCase(tag)
+        _noteTags.update { it + tag }
     }
 
     fun updateNoteTitle(value: String) {
-        _note.update { it.copy(title = value) }
+        _noteTitle.update { value }
+    }
+
+    fun toggleTagDialog() {
+        _showTagDialog.update { !it }
     }
 }

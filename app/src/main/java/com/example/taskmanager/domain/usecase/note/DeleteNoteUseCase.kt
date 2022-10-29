@@ -1,11 +1,7 @@
 package com.example.taskmanager.domain.usecase.note
 
-import com.example.taskmanager.domain.dataModels.Resource
-import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
-import com.example.taskmanager.domain.repository.Repository
+import com.example.taskmanager.domain.models.Resource
+import com.example.taskmanager.domain.models.NoteWithTags
+import com.example.taskmanager.domain.repository.NoteRepository
 
-fun interface DeleteNoteUseCase : suspend (NoteWithTagsDto) -> Resource<Unit>
-
-fun deleteNoteUseCase(repository: Repository) = DeleteNoteUseCase {
-    repository.deleteNote(it.toEntity())
-}
+fun interface DeleteNoteUseCase : suspend (NoteWithTags) -> Resource<Unit>

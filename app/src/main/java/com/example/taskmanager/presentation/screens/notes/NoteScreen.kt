@@ -15,24 +15,38 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.taskmanager.R
-import com.example.taskmanager.domain.dataModels.presentation.NoteWithTagsDto
-import com.example.taskmanager.domain.dataModels.presentation.TagDto
+import com.example.taskmanager.domain.models.NoteWithTags
+import com.example.taskmanager.domain.models.Tag
 import com.example.taskmanager.presentation.utils.noteBody.NoteImage
 import com.example.taskmanager.presentation.utils.noteBody.NoteText
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesScreen(
     onNoteClick: (String) -> Unit = {},
     viewModel: NotesViewModel = koinViewModel()
 ) {
     val notes by viewModel.notes.collectAsState()
+    NotesScreen(
+        notes = notes,
+        onFavoriteClick = viewModel::updateFavorite,
+        onPinClick = viewModel::updatePin,
+        onNoteClick = onNoteClick
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NotesScreen(
+    notes: List<NoteWithTags>,
+    onFavoriteClick: (NoteWithTags) -> Unit,
+    onPinClick: (NoteWithTags) -> Unit,
+    onNoteClick: (String) -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -54,8 +68,8 @@ fun NotesScreen(
                 TagCardItem(
                     onNoteClick = onNoteClick,
                     note = note,
-                    onFavoriteClick = { viewModel.updateFavorite(note) },
-                    onPinClick = { viewModel.updatePin(note) }
+                    onFavoriteClick = { onFavoriteClick(note) },
+                    onPinClick = { onPinClick(note) }
                 )
             }
         }
@@ -66,10 +80,10 @@ fun NotesScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TagCardItem(
     onNoteClick: (String) -> Unit,
-    note: NoteWithTagsDto,
+    note: NoteWithTags,
     onFavoriteClick: () -> Unit = {},
     onPinClick: () -> Unit = {},
-    onTagClick: (TagDto) -> Unit = {}
+    onTagClick: (Tag) -> Unit = {}
 ) {
     OutlinedCard(
         onClick = { onNoteClick(note.noteId) },
@@ -133,7 +147,7 @@ private fun TagCardItem(
 }
 
 @Composable
-private fun TagsRow(tags: List<TagDto>, onTagClick: (TagDto) -> Unit) {
+private fun TagsRow(tags: List<Tag>, onTagClick: (Tag) -> Unit) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         items(tags) { tag ->
             TextButton(

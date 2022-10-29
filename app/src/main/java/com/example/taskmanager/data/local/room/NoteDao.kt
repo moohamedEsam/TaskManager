@@ -6,9 +6,9 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.taskmanager.domain.dataModels.data.NoteEntity
-import com.example.taskmanager.domain.dataModels.data.NoteWithTagCrossRef
-import com.example.taskmanager.domain.dataModels.data.NoteWithTagsEntity
+import com.example.taskmanager.data.models.NoteEntity
+import com.example.taskmanager.data.models.NoteWithTagCrossRef
+import com.example.taskmanager.data.models.NoteWithTagsEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -47,6 +47,9 @@ interface NoteDao {
 
     @Insert
     suspend fun addTagToNote(note: NoteWithTagCrossRef)
+
+    @Query("delete from noteWithTagCrossRef where noteId = :noteId")
+    suspend fun deleteNoteTagsRefs(noteId: String)
 
     @Delete
     suspend fun deleteTagFromNote(note: NoteWithTagCrossRef)

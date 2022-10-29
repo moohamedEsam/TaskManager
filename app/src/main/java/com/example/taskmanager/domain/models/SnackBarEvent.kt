@@ -1,4 +1,4 @@
-package com.example.taskmanager.domain.dataModels
+package com.example.taskmanager.domain.models
 
 data class SnackBarEvent(
     val message: String,

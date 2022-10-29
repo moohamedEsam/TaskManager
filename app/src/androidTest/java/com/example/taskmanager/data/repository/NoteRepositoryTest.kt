@@ -6,12 +6,12 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.example.taskmanager.data.local.room.AppDatabase
-import com.example.taskmanager.domain.dataModels.data.NoteEntity
-import com.example.taskmanager.domain.dataModels.data.NoteWithTagsEntity
-import com.example.taskmanager.domain.dataModels.Resource
-import com.example.taskmanager.domain.dataModels.data.TagEntity
-import com.example.taskmanager.domain.dataModels.interfaces.Attachment
-import com.example.taskmanager.domain.repository.Repository
+import com.example.taskmanager.data.models.NoteEntity
+import com.example.taskmanager.data.models.NoteWithTagsEntity
+import com.example.taskmanager.domain.models.Resource
+import com.example.taskmanager.data.models.TagEntity
+import com.example.taskmanager.domain.models.Attachment
+import com.example.taskmanager.domain.repository.NoteRepository
 import com.google.common.truth.Truth.assertThat
 import dev.krud.shapeshift.ShapeShift
 import dev.krud.shapeshift.ShapeShiftBuilder
@@ -30,9 +30,9 @@ import org.junit.runner.RunWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
-class RepositoryTest {
+class NoteRepositoryTest {
     private lateinit var db: AppDatabase
-    private lateinit var repository: Repository
+    private lateinit var noteRepository: NoteRepository
     private lateinit var shapeShift: ShapeShift
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -48,7 +48,7 @@ class RepositoryTest {
                 autoMap(AutoMappingStrategy.BY_NAME_AND_TYPE)
             }
             .build()
-        repository = RepositoryImpl(db.noteDao(), db.tagDao(), shapeShift)
+        noteRepository = NoteRepositoryImpl(db.noteDao(), db.tagDao(), shapeShift)
     }
 
     @After
@@ -67,8 +67,8 @@ class RepositoryTest {
             attachments = emptyList(),
             tags = listOf(tag)
         )
-        repository.addNote(note)
-        repository.getNotes().test {
+        noteRepository.addNote(note)
+        noteRepository.getNotes().test {
             val notes = awaitItem()
             assertThat(notes).hasSize(1)
             assertThat(notes.first().tags).hasSize(1)
@@ -83,9 +83,9 @@ class RepositoryTest {
             attachments = emptyList(),
             tags = emptyList()
         )
-        val result = repository.addNote(note)
+        val result = noteRepository.addNote(note)
         assertThat(result).isInstanceOf(Resource.Success::class.java)
-        repository.getNotes().test {
+        noteRepository.getNotes().test {
             val notes = awaitItem()
             assertThat(notes).isNotEmpty()
             assertThat(notes.first().title).isEqualTo(note.title)
@@ -100,14 +100,14 @@ class RepositoryTest {
             attachments = emptyList(),
             tags = emptyList()
         )
-        repository.addNote(note)
+        noteRepository.addNote(note)
         val updatedNote = note.copy(
             title = "updated title",
             attachments = listOf(Attachment.Audio("path")),
             tags = listOf(TagEntity("tag", 1))
         )
-        repository.updateNote(updatedNote)
-        repository.getNotes().test {
+        noteRepository.updateNote(updatedNote)
+        noteRepository.getNotes().test {
             val notes = awaitItem()
             assertThat(notes).isNotEmpty()
             assertThat(notes.first().title).isEqualTo(updatedNote.title)
