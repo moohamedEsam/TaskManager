@@ -29,6 +29,7 @@ import org.koin.core.parameter.parametersOf
 fun NoteFormScreen(
     snackbarHostState: SnackbarHostState,
     noteId: String,
+    onNoteSaved: (noteId: String) -> Unit = {},
     viewModel: NoteFormViewModel = koinViewModel(parameters = { parametersOf(noteId) })
 ) {
     LaunchedEffect(key1 = Unit) {
@@ -47,7 +48,7 @@ fun NoteFormScreen(
         onAddNoteBody = viewModel::addNoteBody,
         onRemoveNoteBody = viewModel::removeNoteBody,
         onToggleTagDialog = viewModel::toggleTagDialog,
-        onSaveNote = viewModel::saveNote
+        onSaveNote = { viewModel.saveNote(onNoteSaved) },
     )
 
     TagDialog(
@@ -70,8 +71,7 @@ fun NoteFormScreenContent(
     onRemoveNoteBody: (NoteBodyProvider) -> Unit,
     onToggleTagDialog: () -> Unit,
     onSaveNote: () -> Unit,
-
-    ) {
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),

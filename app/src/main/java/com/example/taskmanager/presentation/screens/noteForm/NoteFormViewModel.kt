@@ -13,6 +13,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class NoteFormViewModel(
     private val noteId: String,
@@ -71,12 +72,13 @@ class NoteFormViewModel(
         _noteBodies.update { it - noteBody }
     }
 
-    fun saveNote(): Job = viewModelScope.launch {
+    fun saveNote(onNoteSaved: (String) -> Unit = {}): Job = viewModelScope.launch {
         val note = NoteWithTags(
             _noteTitle.value,
             _noteBodies.value.map { it.getNoteBody() },
             attachments = emptyList(),
-            tags = _noteTags.value.toList()
+            tags = _noteTags.value.toList(),
+            noteId = noteId.ifBlank { UUID.randomUUID().toString() }
         )
         val result = if (noteId.isBlank())
             createNoteUseCase(note)
@@ -85,7 +87,9 @@ class NoteFormViewModel(
         val event = when (result) {
             is Resource.Error -> SnackBarEvent(result.message ?: "") { saveNote() }
             is Resource.Success -> {
-                SnackBarEvent("note has been saved", null)
+                SnackBarEvent("note has been saved", "View") {
+                    onNoteSaved(note.noteId)
+                }
             }
             else -> null
         }

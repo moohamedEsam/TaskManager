@@ -14,5 +14,5 @@ suspend fun SnackbarHostState.handleEvent(snackBarEvent: SnackBarEvent) {
         )
 
     if (result == SnackbarResult.ActionPerformed)
-        snackBarEvent.onActionClick
+        snackBarEvent.onActionClick()
 }

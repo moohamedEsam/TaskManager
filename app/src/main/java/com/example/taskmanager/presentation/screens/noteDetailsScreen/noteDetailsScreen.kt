@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Delete
@@ -29,18 +28,16 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun NoteDetailsScreen(
     noteId: String,
-    onBackClick: () -> Unit = {},
     onEditClick: (String) -> Unit = {},
     viewModel: NoteDetailsViewModel = koinViewModel(parameters = { parametersOf(noteId) })
 ) {
     val note by viewModel.note.collectAsState()
 
     NoteDetailsScreen(
-        onBackClick = onBackClick,
-        onEditClick = onEditClick,
         uiState = note,
-        onFavoriteClick = viewModel::onFavoriteClick,
+        onEditClick = onEditClick,
         onDeleteClick = viewModel::onDeleteClick,
+        onFavoriteClick = viewModel::onFavoriteClick,
         onPinClick = viewModel::onPinClick,
     )
 }
@@ -48,7 +45,6 @@ fun NoteDetailsScreen(
 @Composable
 fun NoteDetailsScreen(
     uiState: Resource<NoteWithTags>,
-    onBackClick: () -> Unit = {},
     onEditClick: (String) -> Unit = {},
     onDeleteClick: () -> Unit = {},
     onFavoriteClick: () -> Unit = {},
@@ -75,7 +71,6 @@ fun NoteDetailsScreen(
         }
         is Resource.Success -> NoteScreenContent(
             uiState = uiState,
-            onBackClick = onBackClick,
             onEditClick = onEditClick,
             onFavoriteClick = onFavoriteClick,
             onDeleteClick = onDeleteClick,
@@ -87,7 +82,6 @@ fun NoteDetailsScreen(
 @Composable
 private fun NoteScreenContent(
     uiState: Resource<NoteWithTags>,
-    onBackClick: () -> Unit,
     onEditClick: (String) -> Unit,
     onFavoriteClick: () -> Unit,
     onDeleteClick: () -> Unit,
@@ -101,7 +95,6 @@ private fun NoteScreenContent(
         item {
             ActionBar(
                 note = uiState.data,
-                onBackClick = onBackClick,
                 onEditClick = { onEditClick(uiState.data.noteId) },
                 onDeleteClick = onDeleteClick,
                 onFavoriteClick = onFavoriteClick,
@@ -118,7 +111,6 @@ private fun NoteScreenContent(
 @Composable
 private fun ActionBar(
     note: NoteWithTags,
-    onBackClick: () -> Unit,
     onEditClick: () -> Unit,
     onPinClick: () -> Unit = {},
     onFavoriteClick: () -> Unit = {},
@@ -128,13 +120,11 @@ private fun ActionBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .horizontalScroll(rememberScrollState()),
+            .horizontalScroll(rememberScrollState())
+            .padding(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = onBackClick) {
-            Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-        }
         Text(text = note.title, style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.weight(0.8f))
 

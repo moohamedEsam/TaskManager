@@ -9,13 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import com.example.taskmanager.presentation.screens.noteForm.NoteFormScreen
 import com.example.taskmanager.presentation.screens.noteDetailsScreen.navigateToNoteDetailsScreen
 import com.example.taskmanager.presentation.screens.noteDetailsScreen.noteDetailsScreen
+import com.example.taskmanager.presentation.screens.noteForm.navigateToNoteFormScreen
 import com.example.taskmanager.presentation.screens.noteForm.noteFormScreen
-import com.example.taskmanager.presentation.screens.notes.NotesScreen
-import com.example.taskmanager.presentation.screens.notes.noteFormScreen
+import com.example.taskmanager.presentation.screens.notes.NotesScreenRoute
+import com.example.taskmanager.presentation.screens.notes.notesFormScreen
 
 @Composable
 fun Navigation(
@@ -25,24 +24,25 @@ fun Navigation(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = Screens.NotesScreen.route,
+        startDestination = Screens.NotesScreenRoute(),
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
             .padding(vertical = 8.dp)
     ) {
 
-        noteFormScreen {
+        notesFormScreen {
             navHostController.navigateToNoteDetailsScreen(it)
         }
 
-        noteFormScreen(snackbarHostState)
-
-        noteDetailsScreen(
-            onBackClick = navHostController::popBackStack,
-            onEditClick = { id ->
-                navHostController.navigateToNoteDetailsScreen(id)
+        noteFormScreen(snackbarHostState) { id ->
+            navHostController.navigateToNoteDetailsScreen(id) {
+                navHostController.popBackStack()
             }
-        )
+        }
+
+        noteDetailsScreen { id ->
+            navHostController.navigateToNoteFormScreen(id)
+        }
     }
 }
