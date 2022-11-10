@@ -74,9 +74,9 @@ private fun NavigationIcon(navHostController: NavHostController) {
 private fun CreateNoteFloatingButton(navHostController: NavHostController) {
     val currentDestination by navHostController.currentBackStackEntryAsState()
     if (currentDestination?.destination?.route != Screens.NotesScreenRoute()) return
-    FloatingActionButton(onClick = {
-        navHostController.navigateToNoteFormScreen("    ")
-    }) {
+    FloatingActionButton(
+        onClick = navHostController::navigateToNoteFormScreen
+    ) {
         Icon(imageVector = Icons.Default.Add, contentDescription = null)
     }
 }

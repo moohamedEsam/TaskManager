@@ -1,5 +1,6 @@
 package com.example.taskmanager.presentation.screens.notes
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -43,7 +44,7 @@ fun NotesScreenRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun NotesScreenRoute(
     notes: List<NoteWithTags>,
@@ -68,12 +69,13 @@ fun NotesScreenRoute(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(notes) { note ->
+            items(notes, key = { it.noteId }) { note ->
                 NoteCardItem(
                     onNoteClick = onNoteClick,
                     note = note,
                     onFavoriteClick = { onFavoriteClick(note) },
-                    onPinClick = { onPinClick(note) }
+                    onPinClick = { onPinClick(note) },
+                    modifier = Modifier.animateItemPlacement()
                 )
             }
         }
@@ -92,51 +94,53 @@ private fun NoteCardItem(
 ) {
     OutlinedCard(
         onClick = { onNoteClick(note.noteId) },
-        modifier = modifier.aspectRatio(1f)
+        modifier = modifier
+            .height((LocalConfiguration.current.screenHeightDp / 3).dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-        ) {
-            note.body.find { it is NoteImage }?.Draw(
-                Modifier
+        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+            Box(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(40.dp, (LocalConfiguration.current.screenHeightDp / 5).dp)
-            )
-            NoteCardIconButtons(
-                note = note,
-                modifier = Modifier.align(Alignment.TopEnd),
-                onFavoriteClick = onFavoriteClick,
-                onPinClick = onPinClick
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = note.title,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            note.body.find { it is NoteText }?.let {
-                Text(
-                    text = (it as NoteText).text,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 2
+            ) {
+                note.body.find { it is NoteImage }?.Draw(
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(40.dp, (LocalConfiguration.current.screenHeightDp / 5).dp)
+                )
+                NoteCardIconButtons(
+                    note = note,
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    onFavoriteClick = onFavoriteClick,
+                    onPinClick = onPinClick
                 )
             }
-            TagsRow(note.tags, onTagClick = onTagClick)
-            Spacer(modifier = Modifier.weight(0.8f))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                modifier = Modifier
+                    .weight(0.8f)
+                    .padding(16.dp)
+                    .align(Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(text = "Created: 12 Jan")
-                Text("Note")
+                Text(
+                    text = note.title,
+                    style = MaterialTheme.typography.headlineMedium,
+                )
+                note.body.find { it is NoteText }?.let {
+                    Text(
+                        text = (it as NoteText).text,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 2
+                    )
+                }
+                TagsRow(note.tags, onTagClick = onTagClick)
+                Spacer(modifier = Modifier.weight(0.8f))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "Created: 12 Jan")
+                    Text("Note")
+                }
             }
         }
     }

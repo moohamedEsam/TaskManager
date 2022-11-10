@@ -42,7 +42,9 @@ fun Navigation(
         }
 
         noteDetailsScreen { id ->
-            navHostController.navigateToNoteFormScreen(id)
+            navHostController.navigateToNoteFormScreen(id) {
+                navHostController.popBackStack()
+            }
         }
     }
 }

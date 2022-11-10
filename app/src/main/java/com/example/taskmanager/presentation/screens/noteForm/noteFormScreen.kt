@@ -1,27 +1,32 @@
 package com.example.taskmanager.presentation.screens.noteForm
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.taskmanager.domain.models.Tag
 import com.example.taskmanager.presentation.composables.TagDialog
 import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 import com.example.taskmanager.presentation.utils.handleEvent
 import com.example.taskmanager.presentation.utils.noteBodyProvider.*
 import com.example.taskmanager.ui.theme.TaskManagerTheme
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.toList
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -39,6 +44,7 @@ fun NoteFormScreen(
     }
     val noteBodies by viewModel.noteBodies.collectAsState()
     val showSaveButton by viewModel.showActionButtons.collectAsState()
+    val noteTags by viewModel.noteTags.collectAsState()
 
     NoteFormScreenContent(
         noteTitle = viewModel.noteTitle,
@@ -49,12 +55,14 @@ fun NoteFormScreen(
         onRemoveNoteBody = viewModel::removeNoteBody,
         onToggleTagDialog = viewModel::toggleTagDialog,
         onSaveNote = { viewModel.saveNote(onNoteSaved) },
+        noteTags = noteTags.toList(),
+        onTagLongClick = viewModel::removeTag
     )
 
     TagDialog(
         showDialog = viewModel.showTagDialog,
         tagsState = viewModel.tags,
-        onTagSelected = {},
+        onTagSelected = viewModel::addTag,
         onTagCreate = viewModel::createTag,
         onDismiss = viewModel::toggleTagDialog
     )
@@ -65,11 +73,13 @@ fun NoteFormScreen(
 fun NoteFormScreenContent(
     noteTitle: StateFlow<String>,
     noteBodies: List<NoteBodyProvider>,
+    noteTags: List<Tag>,
     showSaveButton: Boolean,
     onTitleValueChanged: (String) -> Unit,
     onAddNoteBody: (NoteBodyProvider) -> Unit,
     onRemoveNoteBody: (NoteBodyProvider) -> Unit,
     onToggleTagDialog: () -> Unit,
+    onTagLongClick: (Tag) -> Unit,
     onSaveNote: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -83,6 +93,12 @@ fun NoteFormScreenContent(
                 NoteTitle(
                     title = noteTitle,
                     onTitleValueChanged = onTitleValueChanged
+                )
+            }
+            item {
+                TagRow(
+                    noteTags = noteTags,
+                    onToggleTagDialog = onToggleTagDialog
                 )
             }
             items(noteBodies) { noteBody ->
@@ -102,8 +118,42 @@ fun NoteFormScreenContent(
             onCheckListClick = { onAddNoteBody(ListProvider(ListType.Check)) },
             onTableClick = { onAddNoteBody(TableProvider()) },
             onImageClick = { onAddNoteBody(ImageProvider()) },
-            onTagClick = onToggleTagDialog
         )
+    }
+}
+
+@Composable
+private fun TagRow(
+    noteTags: List<Tag>,
+    onToggleTagDialog: () -> Unit,
+    onTagClick: (Tag) -> Unit = {},
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = "Tags:")
+        Spacer(modifier = Modifier.width(8.dp))
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            item {
+                IconButton(onClick = onToggleTagDialog) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add tag"
+                    )
+                }
+            }
+            items(noteTags) { tag ->
+                TextButton(
+                    content = { Text(text = tag.name) },
+                    onClick = { onTagClick(tag) }
+                )
+            }
+
+        }
     }
 }
 
@@ -149,11 +199,7 @@ private fun ToolBoxRow(
     onImageClick: () -> Unit = {},
     onVideoClick: () -> Unit = {},
     onTableClick: () -> Unit = {},
-    onTagClick: () -> Unit = {},
 ) {
-    var showTagDialog by remember {
-        mutableStateOf(false)
-    }
     Card(modifier = modifier.padding(horizontal = 16.dp)) {
         Row(
             modifier = Modifier
@@ -188,10 +234,6 @@ private fun ToolBoxRow(
             IconButton(onClick = onTableClick) {
                 Icon(imageVector = Icons.Default.TableView, contentDescription = null)
             }
-            Spacer(modifier = Modifier.weight(0.8f))
-            IconButton(onClick = onTagClick) {
-                Icon(imageVector = Icons.Default.Label, contentDescription = null)
-            }
         }
     }
 }
@@ -204,8 +246,19 @@ fun NoteFormPreview() {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
+            NoteFormScreenContent(
+                noteTitle = MutableStateFlow("test"),
+                noteBodies = listOf(TextProvider()),
+                showSaveButton = false,
+                onTitleValueChanged = {},
+                onAddNoteBody = {},
+                onRemoveNoteBody = {},
+                onToggleTagDialog = { },
+                noteTags = listOf(Tag("test")),
+                onTagLongClick = {}
+            ) {
 
-            ToolBoxRow(modifier = Modifier.align(Alignment.BottomStart))
+            }
         }
     }
 }

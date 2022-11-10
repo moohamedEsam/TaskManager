@@ -2,18 +2,22 @@ package com.example.taskmanager.presentation.screens.noteForm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskmanager.domain.models.*
+import com.example.taskmanager.domain.models.NoteWithTags
+import com.example.taskmanager.domain.models.Resource
+import com.example.taskmanager.domain.models.SnackBarEvent
+import com.example.taskmanager.domain.models.Tag
 import com.example.taskmanager.domain.usecase.note.CreateNoteUseCase
 import com.example.taskmanager.domain.usecase.note.GetNoteByIdUseCase
 import com.example.taskmanager.domain.usecase.note.UpdateNoteUseCase
 import com.example.taskmanager.domain.usecase.tag.CreateTagUseCase
 import com.example.taskmanager.domain.usecase.tag.GetTagsUseCase
 import com.example.taskmanager.presentation.utils.noteBodyProvider.NoteBodyProvider
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.util.UUID
+import java.util.*
 
 class NoteFormViewModel(
     private val noteId: String,
@@ -29,9 +33,9 @@ class NoteFormViewModel(
     val tags = _tags.asStateFlow()
     private val _noteBodies = MutableStateFlow(emptyList<NoteBodyProvider>())
     val noteBodies = _noteBodies.asStateFlow()
-    val showActionButtons =
-        _noteBodies.map { it.isNotEmpty() }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    val showActionButtons = combine(_noteTitle, _noteBodies) { title, bodies ->
+        title.isNotBlank() && bodies.isNotEmpty()
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     private val snackBarChannel = Channel<SnackBarEvent>()
     val receiveChannel = snackBarChannel.receiveAsFlow()
@@ -41,18 +45,22 @@ class NoteFormViewModel(
 
     private val _noteTags = MutableStateFlow(emptySet<Tag>())
     val noteTags = _noteTags.asStateFlow()
+    private val createdTags = mutableListOf<String>()
 
     init {
         getNote()
         getTags()
     }
 
+    @OptIn(FlowPreview::class)
     private fun getNote() = viewModelScope.launch {
         if (noteId.isNotBlank()) {
-            getNoteByIdUseCase(noteId).collectLatest { noteWithTagsDto ->
+            getNoteByIdUseCase(noteId).debounce(200).collectLatest { noteWithTagsDto ->
                 if (noteWithTagsDto == null) return@collectLatest
                 _noteTitle.update { noteWithTagsDto.title }
-                _noteBodies.update { _ -> noteWithTagsDto.body.map { it.getProvider() } }
+                _noteBodies.update { _ ->
+                    noteWithTagsDto.body.map { it.getProvider() }
+                }
                 _noteTags.update { _ -> noteWithTagsDto.tags.toSet() }
             }
         }
@@ -80,6 +88,9 @@ class NoteFormViewModel(
             tags = _noteTags.value.toList(),
             noteId = noteId.ifBlank { UUID.randomUUID().toString() }
         )
+        _noteTags.value.filter { it.tagId in createdTags }.forEach {
+            createTagUseCase(it)
+        }
         val result = if (noteId.isBlank())
             createNoteUseCase(note)
         else
@@ -99,8 +110,16 @@ class NoteFormViewModel(
 
     fun createTag(tagName: String) = viewModelScope.launch {
         val tag = Tag(tagName)
-        createTagUseCase(tag)
+        createdTags.add(tag.tagId)
+        addTag(tag)
+    }
+
+    fun addTag(tag: Tag) {
         _noteTags.update { it + tag }
+    }
+
+    fun removeTag(tag: Tag) {
+        _noteTags.update { it - tag }
     }
 
     fun updateNoteTitle(value: String) {

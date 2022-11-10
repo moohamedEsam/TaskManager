@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
@@ -37,6 +38,7 @@ class NoteImage(override var uriString: String) : NoteMedia {
     }
 
     override fun getProvider(): NoteBodyProvider = ImageProvider(Uri.parse(uriString))
+
     override fun toString(): String {
         return "NoteImage(uriString='$uriString')"
     }

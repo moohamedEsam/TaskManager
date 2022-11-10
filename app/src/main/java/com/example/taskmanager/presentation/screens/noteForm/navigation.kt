@@ -3,6 +3,7 @@ package com.example.taskmanager.presentation.screens.noteForm
 import androidx.compose.material3.SnackbarHostState
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
 import com.example.taskmanager.presentation.navigation.Screens
 
@@ -24,6 +25,15 @@ fun NavGraphBuilder.noteFormScreen(
     }
 }
 
-fun NavHostController.navigateToNoteFormScreen(noteId: String) {
-    navigate("$NOTE_FORM_SCREEN_NAME/$noteId")
+fun NavHostController.navigateToNoteFormScreen(
+    noteId: String,
+    builder: NavOptionsBuilder.() -> Unit = {}
+) {
+    navigate("$NOTE_FORM_SCREEN_NAME/$noteId") {
+        builder()
+    }
+}
+
+fun NavHostController.navigateToNoteFormScreen() {
+    navigate("$NOTE_FORM_SCREEN_NAME/   ")
 }
