@@ -2,10 +2,11 @@ package com.example.taskmanager.data.repository
 
 import com.example.taskmanager.data.local.room.TagDao
 import com.example.taskmanager.domain.models.Resource
-import com.example.taskmanager.data.models.TagEntity
-import com.example.taskmanager.data.models.asDomain
-import com.example.taskmanager.domain.models.Tag
-import com.example.taskmanager.domain.models.asEntity
+import com.example.taskmanager.data.models.tag.TagEntity
+import com.example.taskmanager.data.models.note.asDomain
+import com.example.taskmanager.data.models.tag.asDomain
+import com.example.taskmanager.domain.models.tag.Tag
+import com.example.taskmanager.domain.models.tag.asEntity
 import com.example.taskmanager.domain.repository.TagRepository
 import com.example.taskmanager.domain.utils.mapResultToResource
 import kotlinx.coroutines.flow.Flow

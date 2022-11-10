@@ -1,11 +1,12 @@
-package com.example.taskmanager.data.models
+package com.example.taskmanager.data.models.note
 
 import androidx.room.Junction
 import androidx.room.Relation
-import com.example.taskmanager.domain.models.Attachment
-import com.example.taskmanager.domain.models.NoteWithTags
+import com.example.taskmanager.data.models.tag.TagEntity
+import com.example.taskmanager.data.models.tag.asDomain
+import com.example.taskmanager.domain.models.note.Attachment
+import com.example.taskmanager.domain.models.note.NoteWithTags
 import com.example.taskmanager.presentation.utils.noteBody.NoteBody
-import java.util.UUID
 
 data class NoteWithTagsEntity(
     val title: String,

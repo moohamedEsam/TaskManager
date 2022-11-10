@@ -1,6 +1,8 @@
-package com.example.taskmanager.domain.models
+package com.example.taskmanager.domain.models.note
 
-import com.example.taskmanager.data.models.NoteWithTagsEntity
+import com.example.taskmanager.data.models.note.NoteWithTagsEntity
+import com.example.taskmanager.domain.models.tag.Tag
+import com.example.taskmanager.domain.models.tag.asEntity
 import com.example.taskmanager.presentation.utils.noteBody.NoteBody
 import java.util.*
 

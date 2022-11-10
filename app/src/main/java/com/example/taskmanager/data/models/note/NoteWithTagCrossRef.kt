@@ -1,4 +1,4 @@
-package com.example.taskmanager.data.models
+package com.example.taskmanager.data.models.note
 
 import androidx.room.Entity
 

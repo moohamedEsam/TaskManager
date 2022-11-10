@@ -2,10 +2,10 @@ package com.example.taskmanager.presentation.screens.noteForm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskmanager.domain.models.NoteWithTags
+import com.example.taskmanager.domain.models.note.NoteWithTags
 import com.example.taskmanager.domain.models.Resource
 import com.example.taskmanager.domain.models.SnackBarEvent
-import com.example.taskmanager.domain.models.Tag
+import com.example.taskmanager.domain.models.tag.Tag
 import com.example.taskmanager.domain.usecase.note.CreateNoteUseCase
 import com.example.taskmanager.domain.usecase.note.GetNoteByIdUseCase
 import com.example.taskmanager.domain.usecase.note.UpdateNoteUseCase

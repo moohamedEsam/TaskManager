@@ -7,10 +7,13 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import com.example.taskmanager.data.local.room.AppDatabase
 import com.example.taskmanager.data.repository.NoteRepositoryImpl
+import com.example.taskmanager.data.repository.ReminderRepositoryImpl
 import com.example.taskmanager.data.repository.TagRepositoryImpl
 import com.example.taskmanager.domain.repository.NoteRepository
+import com.example.taskmanager.domain.repository.ReminderRepository
 import com.example.taskmanager.domain.repository.TagRepository
 import com.example.taskmanager.domain.usecase.note.*
+import com.example.taskmanager.domain.usecase.reminder.createReminderUseCase
 import com.example.taskmanager.domain.usecase.tag.CreateTagUseCase
 import com.example.taskmanager.domain.usecase.tag.GetTagsUseCase
 import com.example.taskmanager.presentation.screens.noteForm.NoteFormViewModel
@@ -43,12 +46,20 @@ val tagModule = module {
     single { GetTagsUseCase(get<TagRepository>()::getTags) }
 }
 
+val reminderModule = module {
+    single<ReminderRepository> { ReminderRepositoryImpl(get()) }
+    single { createReminderUseCase(get(), androidContext()) }
+}
+
 val mainModule = module {
     single { provideImageLoader() }
     single { provideAppDatabase() }
     single { provideNoteDao(get()) }
     single { provideTagDao(get()) }
+    single { provideReminderDao(get()) }
 }
+
+fun provideReminderDao(database: AppDatabase) = database.reminderDao()
 
 fun provideNoteDao(database: AppDatabase) = database.noteDao()
 

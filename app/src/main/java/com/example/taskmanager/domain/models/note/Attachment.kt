@@ -1,4 +1,4 @@
-package com.example.taskmanager.domain.models
+package com.example.taskmanager.domain.models.note
 
 import kotlinx.serialization.Serializable
 

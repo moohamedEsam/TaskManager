@@ -3,7 +3,7 @@ package com.example.taskmanager.domain.usecase.note
 import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
-import com.example.taskmanager.domain.models.NoteWithTags
+import com.example.taskmanager.domain.models.note.NoteWithTags
 import com.example.taskmanager.presentation.utils.noteBody.NoteMedia
 import java.io.File
 import java.util.*

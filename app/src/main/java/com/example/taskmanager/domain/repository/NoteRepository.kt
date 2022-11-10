@@ -1,7 +1,6 @@
 package com.example.taskmanager.domain.repository
 
-import com.example.taskmanager.data.models.NoteWithTagsEntity
-import com.example.taskmanager.domain.models.NoteWithTags
+import com.example.taskmanager.domain.models.note.NoteWithTags
 import com.example.taskmanager.domain.models.Resource
 import kotlinx.coroutines.flow.Flow
 

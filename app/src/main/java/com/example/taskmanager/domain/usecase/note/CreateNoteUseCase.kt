@@ -2,8 +2,7 @@ package com.example.taskmanager.domain.usecase.note
 
 import android.content.Context
 import com.example.taskmanager.domain.models.Resource
-import com.example.taskmanager.domain.models.NoteWithTags
-import com.example.taskmanager.domain.models.asEntity
+import com.example.taskmanager.domain.models.note.NoteWithTags
 import com.example.taskmanager.domain.repository.NoteRepository
 import com.example.taskmanager.presentation.utils.noteBody.NoteMedia
 

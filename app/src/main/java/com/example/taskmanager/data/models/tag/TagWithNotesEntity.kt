@@ -1,8 +1,11 @@
-package com.example.taskmanager.data.models
+package com.example.taskmanager.data.models.tag
 
 import androidx.room.Junction
 import androidx.room.Relation
-import com.example.taskmanager.domain.models.TagWithNotes
+import com.example.taskmanager.data.models.note.NoteEntity
+import com.example.taskmanager.data.models.note.NoteWithTagCrossRef
+import com.example.taskmanager.data.models.note.asDomain
+import com.example.taskmanager.domain.models.tag.TagWithNotes
 
 
 data class TagWithNotesEntity(

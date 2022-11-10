@@ -2,12 +2,12 @@ package com.example.taskmanager.data.repository
 
 import com.example.taskmanager.data.local.room.NoteDao
 import com.example.taskmanager.domain.models.Resource
-import com.example.taskmanager.data.models.NoteWithTagCrossRef
-import com.example.taskmanager.data.models.NoteWithTagsEntity
-import com.example.taskmanager.data.models.asDomain
-import com.example.taskmanager.data.models.asNoteEntity
-import com.example.taskmanager.domain.models.NoteWithTags
-import com.example.taskmanager.domain.models.asEntity
+import com.example.taskmanager.data.models.note.NoteWithTagCrossRef
+import com.example.taskmanager.data.models.note.NoteWithTagsEntity
+import com.example.taskmanager.data.models.note.asDomain
+import com.example.taskmanager.data.models.note.asNoteEntity
+import com.example.taskmanager.domain.models.note.NoteWithTags
+import com.example.taskmanager.domain.models.note.asEntity
 import com.example.taskmanager.domain.repository.NoteRepository
 import com.example.taskmanager.domain.utils.mapResultToResource
 import kotlinx.coroutines.flow.Flow

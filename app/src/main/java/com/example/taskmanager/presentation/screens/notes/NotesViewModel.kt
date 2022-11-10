@@ -2,7 +2,7 @@ package com.example.taskmanager.presentation.screens.notes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskmanager.domain.models.NoteWithTags
+import com.example.taskmanager.domain.models.note.NoteWithTags
 import com.example.taskmanager.domain.usecase.note.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

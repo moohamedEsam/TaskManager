@@ -1,8 +1,7 @@
 package com.example.taskmanager.domain.repository
 
 import com.example.taskmanager.domain.models.Resource
-import com.example.taskmanager.data.models.TagEntity
-import com.example.taskmanager.domain.models.Tag
+import com.example.taskmanager.domain.models.tag.Tag
 import kotlinx.coroutines.flow.Flow
 
 interface TagRepository {

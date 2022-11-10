@@ -1,9 +1,9 @@
-package com.example.taskmanager.data.models
+package com.example.taskmanager.data.models.note
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.taskmanager.domain.models.Attachment
-import com.example.taskmanager.domain.models.Note
+import com.example.taskmanager.domain.models.note.Attachment
+import com.example.taskmanager.domain.models.note.Note
 import com.example.taskmanager.presentation.utils.noteBody.NoteBody
 import java.util.*
 

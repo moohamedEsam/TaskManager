@@ -23,8 +23,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskmanager.R
-import com.example.taskmanager.domain.models.NoteWithTags
-import com.example.taskmanager.domain.models.Tag
+import com.example.taskmanager.domain.models.note.NoteWithTags
+import com.example.taskmanager.domain.models.tag.Tag
 import com.example.taskmanager.presentation.utils.noteBody.NoteImage
 import com.example.taskmanager.presentation.utils.noteBody.NoteText
 import com.example.taskmanager.ui.theme.TaskManagerTheme

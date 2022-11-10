@@ -3,6 +3,8 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
     <application
             android:name=".presentation.utils.ApplicationClass"
             android:allowBackup="true"
@@ -29,6 +31,11 @@
                     android:name="android.app.lib_name"
                     android:value="" />
         </activity>
+        <receiver android:name=".presentation.utils.broadcasts.ReminderReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

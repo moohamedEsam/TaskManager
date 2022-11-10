@@ -6,9 +6,9 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.taskmanager.data.models.NoteEntity
-import com.example.taskmanager.data.models.NoteWithTagCrossRef
-import com.example.taskmanager.data.models.NoteWithTagsEntity
+import com.example.taskmanager.data.models.note.NoteEntity
+import com.example.taskmanager.data.models.note.NoteWithTagCrossRef
+import com.example.taskmanager.data.models.note.NoteWithTagsEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

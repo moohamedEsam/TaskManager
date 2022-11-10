@@ -21,7 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.taskmanager.R
 import com.example.taskmanager.domain.models.Resource
-import com.example.taskmanager.domain.models.NoteWithTags
+import com.example.taskmanager.domain.models.note.NoteWithTags
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 

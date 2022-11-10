@@ -3,7 +3,7 @@ package com.example.taskmanager.presentation.composables
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.example.taskmanager.domain.models.Tag
+import com.example.taskmanager.domain.models.tag.Tag
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
