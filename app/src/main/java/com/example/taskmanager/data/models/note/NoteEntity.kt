@@ -16,7 +16,6 @@ data class NoteEntity(
     val isArchived: Boolean,
     val isPinned: Boolean,
     val isFavorite: Boolean,
-    val lastEditDate: Long?,
     val creationDate: Long,
 
     @PrimaryKey
@@ -30,7 +29,6 @@ fun NoteEntity.asDomain() = Note(
     creationDate = creationDate,
     isDeleted = isDeleted,
     isPinned = isPinned,
-    lastEditDate = lastEditDate,
     isArchived = isArchived,
     noteId = noteId,
     title = title

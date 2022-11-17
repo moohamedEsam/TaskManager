@@ -27,6 +27,7 @@ import com.example.taskmanager.presentation.composables.RemovableNoteBody
 import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 import com.example.taskmanager.presentation.utils.noteBody.NoteBody
 import com.example.taskmanager.presentation.utils.noteBody.NoteTable
+import java.util.*
 
 class TableProvider(
     columns: Int = 1,
@@ -37,13 +38,21 @@ class TableProvider(
     private var cells = mutableStateListOf(*cells.toTypedArray())
     private val tableTitle = mutableStateOf(tableTitle)
     private var columnsState = mutableStateOf(columns)
+    override val id: String = UUID.randomUUID().toString()
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun Draw(modifier: Modifier, onRemove: () -> Unit) {
+    override fun Draw(
+        modifier: Modifier,
+        onRemove: () -> Unit,
+        onUpClick: () -> Unit,
+        onDownClick: () -> Unit
+    ) {
         RemovableNoteBody(
             onRemove = onRemove,
-            modifier = modifier
+            modifier = modifier,
+            onUpClick = onUpClick,
+            onDownClick = onDownClick
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),

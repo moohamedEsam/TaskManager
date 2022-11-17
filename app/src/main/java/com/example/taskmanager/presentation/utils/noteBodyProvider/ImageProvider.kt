@@ -26,6 +26,7 @@ import com.example.taskmanager.presentation.composables.RemovableNoteBody
 import com.example.taskmanager.presentation.utils.noteBody.NoteBody
 import com.example.taskmanager.presentation.utils.noteBody.NoteImage
 import org.koin.androidx.compose.get
+import java.util.UUID
 
 class ImageProvider(initialPath: Uri? = null) :
     NoteBodyProvider {
@@ -33,8 +34,13 @@ class ImageProvider(initialPath: Uri? = null) :
     private val uri = mutableStateOf(initialPath)
 
     @Composable
-    override fun Draw(modifier: Modifier, onRemove: () -> Unit) {
-        RemovableNoteBody(onRemove = onRemove) {
+    override fun Draw(
+        modifier: Modifier,
+        onRemove: () -> Unit,
+        onUpClick: () -> Unit,
+        onDownClick: () -> Unit
+    ) {
+        RemovableNoteBody(onRemove = onRemove, onDownClick = onDownClick, onUpClick = onUpClick) {
             val context = LocalContext.current
             LaunchedEffect(key1 = uri.value) {
                 if (uri.value == null) return@LaunchedEffect
@@ -75,6 +81,8 @@ class ImageProvider(initialPath: Uri? = null) :
             }
         }
     }
+
+    override val id: String = UUID.randomUUID().toString()
 
     override fun getNoteBody(): NoteBody = NoteImage(uri.value?.toString() ?: Uri.EMPTY.toString())
 }

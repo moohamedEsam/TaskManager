@@ -49,7 +49,6 @@ fun NoteWithTagsEntity.asNoteEntity() = NoteEntity(
     isArchived = isArchived,
     isPinned = isPinned,
     isFavorite = isFavorite,
-    lastEditDate = lastEditDate,
     creationDate = creationDate,
     noteId = noteId
 )

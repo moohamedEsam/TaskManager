@@ -35,5 +35,7 @@ fun NavHostController.navigateToNoteFormScreen(
 }
 
 fun NavHostController.navigateToNoteFormScreen() {
-    navigate("$NOTE_FORM_SCREEN_NAME/   ")
+    navigate("$NOTE_FORM_SCREEN_NAME/   "){
+        launchSingleTop = true
+    }
 }

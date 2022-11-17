@@ -1,10 +1,12 @@
 package com.example.taskmanager.presentation.screens.noteForm
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -17,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.taskmanager.domain.models.tag.Tag
 import com.example.taskmanager.presentation.composables.TagDialog
+import com.example.taskmanager.presentation.composables.TagRow
 import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 import com.example.taskmanager.presentation.utils.handleEvent
 import com.example.taskmanager.presentation.utils.noteBodyProvider.*
@@ -53,7 +56,9 @@ fun NoteFormScreen(
         onToggleTagDialog = viewModel::toggleTagDialog,
         onSaveNote = { viewModel.saveNote(onNoteSaved) },
         noteTags = noteTags.toList(),
-        onTagLongClick = viewModel::removeTag
+        onTagLongClick = viewModel::removeTag,
+        onUpClick = viewModel::moveNoteBodyUp,
+        onDownClick = viewModel::moveNoteBodyDown,
     )
 
     TagDialog(
@@ -66,6 +71,7 @@ fun NoteFormScreen(
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoteFormScreenContent(
     noteTitle: StateFlow<String>,
@@ -75,6 +81,8 @@ fun NoteFormScreenContent(
     onTitleValueChanged: (String) -> Unit,
     onAddNoteBody: (NoteBodyProvider) -> Unit,
     onRemoveNoteBody: (NoteBodyProvider) -> Unit,
+    onUpClick: (NoteBodyProvider) -> Unit,
+    onDownClick: (NoteBodyProvider) -> Unit,
     onToggleTagDialog: () -> Unit,
     onTagLongClick: (Tag) -> Unit,
     onSaveNote: () -> Unit,
@@ -94,17 +102,27 @@ fun NoteFormScreenContent(
             }
             item {
                 TagRow(
-                    noteTags = noteTags,
+                    tags = noteTags,
                     onToggleTagDialog = onToggleTagDialog
                 )
             }
-            items(noteBodies) { noteBody ->
-                noteBody.Draw(modifier = Modifier, onRemove = { onRemoveNoteBody(noteBody) })
+            items(noteBodies, key = { it.id }) { noteBody ->
+                noteBody.Draw(
+                    modifier = Modifier.animateItemPlacement(),
+                    onRemove = { onRemoveNoteBody(noteBody) },
+                    onUpClick = { onUpClick(noteBody) },
+                    onDownClick = { onDownClick(noteBody) }
+                )
             }
-            if (showSaveButton)
-                item {
+            item {
+                AnimatedVisibility(
+                    visible = showSaveButton,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
                     ActionRow(onSave = onSaveNote)
                 }
+            }
         }
         ToolBoxRow(
             modifier = Modifier.align(Alignment.BottomCenter),
@@ -116,41 +134,6 @@ fun NoteFormScreenContent(
             onTableClick = { onAddNoteBody(TableProvider()) },
             onImageClick = { onAddNoteBody(ImageProvider()) },
         )
-    }
-}
-
-@Composable
-private fun TagRow(
-    noteTags: List<Tag>,
-    onToggleTagDialog: () -> Unit,
-    onTagClick: (Tag) -> Unit = {},
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = "Tags:")
-        Spacer(modifier = Modifier.width(8.dp))
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            item {
-                IconButton(onClick = onToggleTagDialog) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add tag"
-                    )
-                }
-            }
-            items(noteTags) { tag ->
-                TextButton(
-                    content = { Text(text = tag.name) },
-                    onClick = { onTagClick(tag) }
-                )
-            }
-
-        }
     }
 }
 
@@ -252,7 +235,9 @@ fun NoteFormPreview() {
                 onRemoveNoteBody = {},
                 onToggleTagDialog = { },
                 noteTags = listOf(Tag("test")),
-                onTagLongClick = {}
+                onTagLongClick = {},
+                onUpClick = {},
+                onDownClick = {},
             ) {
 
             }

@@ -69,6 +69,11 @@ dependencies {
     //splash screen
     implementation("androidx.core:core-splashscreen:1.0.0")
 
+    // date picker
+    val datePickerVersion: String by rootProject.extra
+    implementation("io.github.vanpra.compose-material-dialogs:core:${datePickerVersion}")
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:${datePickerVersion}")
+
     val koinVersion: String by rootProject.extra
     val koinComposeVersion: String by rootProject.extra
     implementation("io.insert-koin:koin-core:$koinVersion")

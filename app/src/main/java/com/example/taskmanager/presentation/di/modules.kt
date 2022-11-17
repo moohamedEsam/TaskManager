@@ -13,12 +13,15 @@ import com.example.taskmanager.domain.repository.NoteRepository
 import com.example.taskmanager.domain.repository.ReminderRepository
 import com.example.taskmanager.domain.repository.TagRepository
 import com.example.taskmanager.domain.usecase.note.*
+import com.example.taskmanager.domain.usecase.reminder.GetReminderUseCase
 import com.example.taskmanager.domain.usecase.reminder.createReminderUseCase
+import com.example.taskmanager.domain.usecase.reminder.updateReminderUseCase
 import com.example.taskmanager.domain.usecase.tag.CreateTagUseCase
 import com.example.taskmanager.domain.usecase.tag.GetTagsUseCase
 import com.example.taskmanager.presentation.screens.noteForm.NoteFormViewModel
 import com.example.taskmanager.presentation.screens.noteDetailsScreen.NoteDetailsViewModel
 import com.example.taskmanager.presentation.screens.notes.NotesViewModel
+import com.example.taskmanager.presentation.screens.reminderForm.ReminderFormViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.scope.Scope
@@ -49,6 +52,18 @@ val tagModule = module {
 val reminderModule = module {
     single<ReminderRepository> { ReminderRepositoryImpl(get()) }
     single { createReminderUseCase(get(), androidContext()) }
+    single { updateReminderUseCase(get(), androidContext()) }
+    single { GetReminderUseCase(get<ReminderRepository>()::getReminder) }
+    viewModel { params ->
+        ReminderFormViewModel(
+            reminderId = params[0],
+            createReminderUseCase = get(),
+            updateReminderUseCase = get(),
+            getReminderUseCase = get(),
+            getTagsUseCase = get(),
+            createTagUseCase = get(),
+        )
+    }
 }
 
 val mainModule = module {

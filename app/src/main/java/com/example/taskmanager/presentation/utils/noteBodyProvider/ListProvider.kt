@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.example.taskmanager.presentation.composables.RemovableNoteBody
 import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 import com.example.taskmanager.presentation.utils.noteBody.*
+import java.util.*
 
 class ListProvider(
     private val listType: ListType,
@@ -22,13 +23,24 @@ class ListProvider(
     collection: List<String> = listOf("")
 ) : NoteBodyProvider {
 
+    override val id: String = UUID.randomUUID().toString()
     private var collection = mutableStateListOf(*collection.toTypedArray())
     private val listTitle = mutableStateOf(listTitle)
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun Draw(modifier: Modifier, onRemove: () -> Unit) {
-        RemovableNoteBody(onRemove = onRemove, modifier = modifier) {
+    override fun Draw(
+        modifier: Modifier,
+        onRemove: () -> Unit,
+        onUpClick: () -> Unit,
+        onDownClick: () -> Unit
+    ) {
+        RemovableNoteBody(
+            onRemove = onRemove,
+            modifier = modifier,
+            onUpClick = onUpClick,
+            onDownClick = onDownClick
+        ) {
             Column(modifier = it) {
                 ListTitle()
                 LazyColumn(

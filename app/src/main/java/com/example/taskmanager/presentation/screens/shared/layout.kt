@@ -1,9 +1,7 @@
 package com.example.taskmanager.presentation.screens.shared
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,6 +14,7 @@ import com.example.taskmanager.presentation.navigation.Navigation
 import com.example.taskmanager.presentation.navigation.Screens
 import com.example.taskmanager.presentation.screens.noteForm.navigateToNoteFormScreen
 import com.example.taskmanager.presentation.screens.notes.NotesScreenRoute
+import com.example.taskmanager.presentation.screens.reminderForm.navigateToReminderFormScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,15 +35,20 @@ fun MainLayout() {
                 paddingValues = it
             )
         },
-        floatingActionButton = {
-            CreateNoteFloatingButton(navHostController)
-        },
-        floatingActionButtonPosition = FabPosition.End,
         topBar = {
             TopAppBar(
                 title = { Text("Task Manager") },
                 navigationIcon = {
                     NavigationIcon(navHostController)
+                },
+                actions = {
+                    IconButton(onClick = navHostController::navigateToNoteFormScreen) {
+                        Icon(Icons.Filled.NoteAdd, contentDescription = "Add note")
+                    }
+
+                    IconButton(onClick = navHostController::navigateToReminderFormScreen) {
+                        Icon(Icons.Filled.AlarmAdd, contentDescription = "Add reminder")
+                    }
                 }
             )
         }
@@ -68,15 +72,4 @@ private fun NavigationIcon(navHostController: NavHostController) {
                 contentDescription = null
             )
         }
-}
-
-@Composable
-private fun CreateNoteFloatingButton(navHostController: NavHostController) {
-    val currentDestination by navHostController.currentBackStackEntryAsState()
-    if (currentDestination?.destination?.route != Screens.NotesScreenRoute()) return
-    FloatingActionButton(
-        onClick = navHostController::navigateToNoteFormScreen
-    ) {
-        Icon(imageVector = Icons.Default.Add, contentDescription = null)
-    }
 }

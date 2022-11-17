@@ -10,7 +10,6 @@ data class Note(
     val creationDate: Long,
     val isDeleted: Boolean,
     val isPinned: Boolean,
-    val lastEditDate: Long?,
     val isArchived: Boolean,
     val noteId: String,
     val title: String
@@ -24,7 +23,6 @@ fun Note.asEntity() = NoteEntity(
     isArchived = isArchived,
     isPinned = isPinned,
     isFavorite = isFavorite,
-    lastEditDate = lastEditDate,
     creationDate = creationDate,
     noteId = noteId
 )

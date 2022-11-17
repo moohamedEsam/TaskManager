@@ -8,14 +8,26 @@ import com.example.taskmanager.presentation.composables.RemovableNoteBody
 import com.example.taskmanager.presentation.utils.getTransparentTextFieldColors
 import com.example.taskmanager.presentation.utils.noteBody.NoteBody
 import com.example.taskmanager.presentation.utils.noteBody.NoteText
+import java.util.*
 
 class TextProvider(initialText: String = "") : NoteBodyProvider {
     private var textState = mutableStateOf(initialText)
+    override val id: String = UUID.randomUUID().toString()
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun Draw(modifier: Modifier, onRemove: () -> Unit) {
-        RemovableNoteBody(onRemove = onRemove, modifier = modifier) {
+    override fun Draw(
+        modifier: Modifier,
+        onRemove: () -> Unit,
+        onUpClick: () -> Unit,
+        onDownClick: () -> Unit
+    ) {
+        RemovableNoteBody(
+            onRemove = onRemove,
+            modifier = modifier,
+            onDownClick = onDownClick,
+            onUpClick = onUpClick
+        ) {
             val composeValue by remember {
                 textState
             }

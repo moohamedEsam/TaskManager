@@ -7,6 +7,7 @@ val navigationVersion by extra { "2.5.2" }
 val truthVersion by extra { "1.1.3" }
 val lifecycleVersion by extra { "2.6.0-alpha02" }
 val roomVersion by extra { "2.4.3" }
+val datePickerVersion by extra { "0.8.1-rc" }
 
 plugins {
     id("com.android.application") version "7.3.0" apply false

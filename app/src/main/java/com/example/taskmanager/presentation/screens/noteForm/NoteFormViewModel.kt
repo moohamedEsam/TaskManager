@@ -80,6 +80,26 @@ class NoteFormViewModel(
         _noteBodies.update { it - noteBody }
     }
 
+    fun moveNoteBodyUp(noteBody: NoteBodyProvider) {
+        val index = _noteBodies.value.indexOfFirst { it.id == noteBody.id }
+        if (index == 0) return
+        _noteBodies.update { list ->
+            val newList = list.toMutableList()
+            Collections.swap(newList, index, index - 1)
+            newList
+        }
+    }
+
+    fun moveNoteBodyDown(noteBody: NoteBodyProvider) {
+        val index = _noteBodies.value.indexOfFirst { it.id == noteBody.id }
+        if (index == _noteBodies.value.lastIndex) return
+        _noteBodies.update { list ->
+            val newList = list.toMutableList()
+            Collections.swap(newList, index, index + 1)
+            newList
+        }
+    }
+
     fun saveNote(onNoteSaved: (String) -> Unit = {}): Job = viewModelScope.launch {
         val note = NoteWithTags(
             _noteTitle.value,

@@ -4,30 +4,25 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import com.example.taskmanager.domain.models.Resource
 import com.example.taskmanager.domain.models.reminder.Reminder
 import com.example.taskmanager.domain.repository.ReminderRepository
 import com.example.taskmanager.presentation.utils.broadcasts.ReminderReceiver
-import java.util.Date
 
-fun interface CreateReminderUseCase : suspend (Reminder) -> Resource<Unit>
+fun interface UpdateReminderUseCase : suspend (Reminder) -> Resource<Unit>
 
-fun createReminderUseCase(reminderRepository: ReminderRepository, context: Context) =
-    CreateReminderUseCase {
+fun updateReminderUseCase(reminderRepository: ReminderRepository, context: Context) =
+    UpdateReminderUseCase {
         val alarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, ReminderReceiver::class.java).apply {
-            putExtra("reminderId", "123")
+            putExtra("reminderId", it.reminderId)
             putExtra("title", it.title)
             putExtra("description", it.description)
         }
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            0,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
+        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+        if (it.date < System.currentTimeMillis())
+            alarmManager.cancel(pendingIntent)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, it.date, pendingIntent)
-        reminderRepository.addReminder(it)
+        reminderRepository.updateReminder(it)
     }

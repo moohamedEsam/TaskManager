@@ -2,8 +2,11 @@ package com.example.taskmanager.presentation.composables
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,6 +23,8 @@ import androidx.constraintlayout.compose.ConstraintLayoutScope
 fun RemovableNoteBody(
     modifier: Modifier = Modifier,
     onRemove: () -> Unit,
+    onUpClick: () -> Unit = {},
+    onDownClick: () -> Unit = {},
     body: @Composable ConstraintLayoutScope.(Modifier) -> Unit
 ) {
     ConstraintLayout(
@@ -36,15 +41,31 @@ fun RemovableNoteBody(
                     end.linkTo(parent.end)
                 }
         )
-        IconButton(
-            onClick = onRemove,
+        Row(
             modifier = Modifier.constrainAs(removeButton) {
                 top.linkTo(bodyRef.top)
                 bottom.linkTo(bodyRef.top)
                 end.linkTo(parent.end)
             }
         ) {
-            Icon(imageVector = Icons.Filled.Cancel, contentDescription = null)
+            IconButton(onClick = onUpClick) {
+                Icon(
+                    imageVector = Icons.Default.ArrowUpward,
+                    contentDescription = "up"
+                )
+            }
+
+            IconButton(onClick = onDownClick) {
+                Icon(
+                    imageVector = Icons.Default.ArrowDownward,
+                    contentDescription = "down"
+                )
+            }
+            IconButton(
+                onClick = onRemove
+            ) {
+                Icon(imageVector = Icons.Filled.Cancel, contentDescription = null)
+            }
         }
     }
 }
