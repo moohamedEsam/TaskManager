@@ -21,6 +21,7 @@ import com.example.taskmanager.domain.usecase.tag.GetTagsUseCase
 import com.example.taskmanager.presentation.screens.noteForm.NoteFormViewModel
 import com.example.taskmanager.presentation.screens.noteDetailsScreen.NoteDetailsViewModel
 import com.example.taskmanager.presentation.screens.notes.NotesViewModel
+import com.example.taskmanager.presentation.screens.reminderDetailsScreen.ReminderDetailsViewModel
 import com.example.taskmanager.presentation.screens.reminderForm.ReminderFormViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -62,6 +63,12 @@ val reminderModule = module {
             getReminderUseCase = get(),
             getTagsUseCase = get(),
             createTagUseCase = get(),
+        )
+    }
+    viewModel { params ->
+        ReminderDetailsViewModel(
+            reminderId = params[0],
+            getReminderUseCase = get()
         )
     }
 }

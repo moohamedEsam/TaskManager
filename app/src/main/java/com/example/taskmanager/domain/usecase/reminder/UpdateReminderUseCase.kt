@@ -20,7 +20,12 @@ fun updateReminderUseCase(reminderRepository: ReminderRepository, context: Conte
             putExtra("title", it.title)
             putExtra("description", it.description)
         }
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
         if (it.date < System.currentTimeMillis())
             alarmManager.cancel(pendingIntent)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, it.date, pendingIntent)

@@ -36,7 +36,7 @@
             <intent-filter>
                 <data
                         android:scheme="https"
-                        android:host="reminders" />
+                        android:host="reminder_details_screen" />
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />

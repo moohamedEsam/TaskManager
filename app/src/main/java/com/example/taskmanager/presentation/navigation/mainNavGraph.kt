@@ -19,7 +19,10 @@ import com.example.taskmanager.presentation.screens.noteForm.navigateToNoteFormS
 import com.example.taskmanager.presentation.screens.noteForm.noteFormScreen
 import com.example.taskmanager.presentation.screens.notes.NotesScreenRoute
 import com.example.taskmanager.presentation.screens.notes.notesFormScreen
+import com.example.taskmanager.presentation.screens.reminderDetailsScreen.navigateToReminderDetailsScreen
+import com.example.taskmanager.presentation.screens.reminderDetailsScreen.reminderDetailsScreen
 import com.example.taskmanager.presentation.screens.reminderForm.ReminderFormScreen
+import com.example.taskmanager.presentation.screens.reminderForm.navigateToReminderFormScreen
 import com.example.taskmanager.presentation.screens.reminderForm.reminderFormScreen
 
 @Composable
@@ -53,8 +56,10 @@ fun Navigation(
             }
         }
 
-        reminderFormScreen(snackbarHostState){
-
+        reminderFormScreen(snackbarHostState) {
+            navHostController.navigateToReminderDetailsScreen(it)
         }
+
+        reminderDetailsScreen(snackbarHostState)
     }
 }

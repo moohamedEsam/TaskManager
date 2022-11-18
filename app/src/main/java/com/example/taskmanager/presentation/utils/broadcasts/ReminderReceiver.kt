@@ -21,7 +21,7 @@ class ReminderReceiver : BroadcastReceiver() {
         val viewPendingIntent = TaskStackBuilder.create(context).run {
             val deepLinkIntent = Intent(
                 Intent.ACTION_VIEW,
-                "https://reminders/$id".toUri(),
+                "https://reminder_details_screen/$id".toUri(),
                 context,
                 MainActivity::class.java
             )
@@ -33,6 +33,7 @@ class ReminderReceiver : BroadcastReceiver() {
             .setSmallIcon(R.drawable.pin)
             .setContentTitle(title)
             .setContentText(description)
+            .setAutoCancel(true)
             .addAction(R.drawable.pin, "View", viewPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()

@@ -18,7 +18,7 @@ fun createReminderUseCase(reminderRepository: ReminderRepository, context: Conte
         val alarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, ReminderReceiver::class.java).apply {
-            putExtra("reminderId", "123")
+            putExtra("reminderId", it.reminderId)
             putExtra("title", it.title)
             putExtra("description", it.description)
         }
@@ -28,6 +28,7 @@ fun createReminderUseCase(reminderRepository: ReminderRepository, context: Conte
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, it.date, pendingIntent)
+        pendingIntent.send()
+//        alarmManager.setExact(AlarmManager.RTC_WAKEUP, it.date, pendingIntent)
         reminderRepository.addReminder(it)
     }
