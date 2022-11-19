@@ -8,19 +8,18 @@ data class Reminder(
     val title: String,
     val description: String,
     val date: Long,
-    val isDone: Boolean,
     val tags: List<Tag>,
     val isPinned: Boolean,
     val isArchived: Boolean,
     val isDeleted: Boolean,
     val isFavorite: Boolean,
+    val createdAt: Long,
 )
 
 fun Reminder.asEntity() = ReminderEntity(
     title = title,
     description = description,
     date = date,
-    isDone = isDone,
     isPinned = isPinned,
     isArchived = isArchived,
     isDeleted = isDeleted,

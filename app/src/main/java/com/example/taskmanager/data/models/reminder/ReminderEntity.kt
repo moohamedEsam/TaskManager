@@ -10,7 +10,6 @@ data class ReminderEntity(
     val description: String,
     val date: Long,
     val createdAt: Long = System.currentTimeMillis(),
-    val isDone: Boolean = false,
     val isPinned: Boolean = false,
     val isArchived: Boolean = false,
     val isDeleted: Boolean = false,

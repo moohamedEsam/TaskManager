@@ -12,7 +12,6 @@ data class ReminderWithTagEntity(
     val description: String,
     val date: Long,
     val createdAt: Long = System.currentTimeMillis(),
-    val isDone: Boolean = false,
     val isPinned: Boolean = false,
     val isArchived: Boolean = false,
     val isDeleted: Boolean = false,
@@ -30,13 +29,13 @@ fun ReminderWithTagEntity.asDomain() = Reminder(
     title = title,
     description = description,
     date = date,
-    isDone = isDone,
     isPinned = isPinned,
     isArchived = isArchived,
     isDeleted = isDeleted,
     isFavorite = isFavorite,
     reminderId = reminderId,
-    tags = tags.map { it.asDomain() }
+    tags = tags.map { it.asDomain() },
+    createdAt = createdAt
 )
 
 fun ReminderWithTagEntity.asReminderEntity() = ReminderEntity(

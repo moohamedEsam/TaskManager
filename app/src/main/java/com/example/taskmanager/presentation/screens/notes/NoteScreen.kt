@@ -13,9 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -29,6 +27,7 @@ import com.example.taskmanager.presentation.utils.noteBody.NoteImage
 import com.example.taskmanager.presentation.utils.noteBody.NoteText
 import com.example.taskmanager.ui.theme.TaskManagerTheme
 import org.koin.androidx.compose.koinViewModel
+import java.text.SimpleDateFormat
 
 @Composable
 fun NotesScreenRoute(
@@ -92,12 +91,19 @@ private fun NoteCardItem(
     onPinClick: () -> Unit = {},
     onTagClick: (Tag) -> Unit = {}
 ) {
+    val simpleDateFormat by remember {
+        mutableStateOf(SimpleDateFormat("yy MMM dd hh:mm a"))
+    }
     OutlinedCard(
         onClick = { onNoteClick(note.noteId) },
         modifier = modifier
             .height((LocalConfiguration.current.screenHeightDp / 3).dp)
     ) {
-        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -134,13 +140,7 @@ private fun NoteCardItem(
                 }
                 TagsRow(note.tags, onTagClick = onTagClick)
                 Spacer(modifier = Modifier.weight(0.8f))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "Created: 12 Jan")
-                    Text("Note")
-                }
+                Text(text = "Created: ${simpleDateFormat.format(note.creationDate)}")
             }
         }
     }

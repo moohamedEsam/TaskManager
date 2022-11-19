@@ -8,22 +8,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
 import com.example.taskmanager.presentation.screens.noteDetailsScreen.navigateToNoteDetailsScreen
 import com.example.taskmanager.presentation.screens.noteDetailsScreen.noteDetailsScreen
 import com.example.taskmanager.presentation.screens.noteForm.navigateToNoteFormScreen
 import com.example.taskmanager.presentation.screens.noteForm.noteFormScreen
-import com.example.taskmanager.presentation.screens.notes.NotesScreenRoute
+import com.example.taskmanager.presentation.screens.noteForm.noteFormScreenRoute
 import com.example.taskmanager.presentation.screens.notes.notesFormScreen
 import com.example.taskmanager.presentation.screens.reminderDetailsScreen.navigateToReminderDetailsScreen
 import com.example.taskmanager.presentation.screens.reminderDetailsScreen.reminderDetailsScreen
-import com.example.taskmanager.presentation.screens.reminderForm.ReminderFormScreen
-import com.example.taskmanager.presentation.screens.reminderForm.navigateToReminderFormScreen
 import com.example.taskmanager.presentation.screens.reminderForm.reminderFormScreen
+import com.example.taskmanager.presentation.screens.reminders.remindersScreenRoute
+import com.example.taskmanager.presentation.screens.reminders.remindersScreen
 
 @Composable
 fun Navigation(
@@ -33,7 +29,7 @@ fun Navigation(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = Screens.NotesScreenRoute(),
+        startDestination = Screens.noteFormScreenRoute(),
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
@@ -61,5 +57,9 @@ fun Navigation(
         }
 
         reminderDetailsScreen(snackbarHostState)
+
+        remindersScreen {
+            navHostController.navigateToReminderDetailsScreen(it)
+        }
     }
 }

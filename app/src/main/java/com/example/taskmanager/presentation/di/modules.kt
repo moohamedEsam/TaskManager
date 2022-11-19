@@ -13,9 +13,7 @@ import com.example.taskmanager.domain.repository.NoteRepository
 import com.example.taskmanager.domain.repository.ReminderRepository
 import com.example.taskmanager.domain.repository.TagRepository
 import com.example.taskmanager.domain.usecase.note.*
-import com.example.taskmanager.domain.usecase.reminder.GetReminderUseCase
-import com.example.taskmanager.domain.usecase.reminder.createReminderUseCase
-import com.example.taskmanager.domain.usecase.reminder.updateReminderUseCase
+import com.example.taskmanager.domain.usecase.reminder.*
 import com.example.taskmanager.domain.usecase.tag.CreateTagUseCase
 import com.example.taskmanager.domain.usecase.tag.GetTagsUseCase
 import com.example.taskmanager.presentation.screens.noteForm.NoteFormViewModel
@@ -23,6 +21,7 @@ import com.example.taskmanager.presentation.screens.noteDetailsScreen.NoteDetail
 import com.example.taskmanager.presentation.screens.notes.NotesViewModel
 import com.example.taskmanager.presentation.screens.reminderDetailsScreen.ReminderDetailsViewModel
 import com.example.taskmanager.presentation.screens.reminderForm.ReminderFormViewModel
+import com.example.taskmanager.presentation.screens.reminders.RemindersViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.scope.Scope
@@ -54,7 +53,12 @@ val reminderModule = module {
     single<ReminderRepository> { ReminderRepositoryImpl(get()) }
     single { createReminderUseCase(get(), androidContext()) }
     single { updateReminderUseCase(get(), androidContext()) }
+    single { GetRemindersUseCase(get<ReminderRepository>()::getReminders) }
     single { GetReminderUseCase(get<ReminderRepository>()::getReminder) }
+    single { UpdateReminderArchiveUseCase(get<ReminderRepository>()::markReminderAsArchived) }
+    single { UpdateReminderPinUseCase(get<ReminderRepository>()::markReminderAsPinned) }
+    single { UpdateReminderFavoriteUseCase(get<ReminderRepository>()::markReminderAsFavorite) }
+    single { UpdateReminderDeleteUseCase(get<ReminderRepository>()::markReminderAsDeleted) }
     viewModel { params ->
         ReminderFormViewModel(
             reminderId = params[0],
@@ -71,6 +75,17 @@ val reminderModule = module {
             getReminderUseCase = get()
         )
     }
+
+    viewModel {
+        RemindersViewModel(
+            getRemindersUseCase = get(),
+            updateReminderArchiveUseCase = get(),
+            updateReminderPinUseCase = get(),
+            updateReminderFavoriteUseCase = get(),
+            updateReminderDeleteUseCase = get(),
+        )
+    }
+
 }
 
 val mainModule = module {

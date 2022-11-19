@@ -138,7 +138,6 @@ class ReminderFormViewModel(
         title = "",
         description = "",
         date = Date().time,
-        isDone = false,
         tags = emptyList(),
         isPinned = false,
         isArchived = false,
