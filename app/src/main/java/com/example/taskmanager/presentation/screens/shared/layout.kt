@@ -1,25 +1,30 @@
 package com.example.taskmanager.presentation.screens.shared
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.taskmanager.presentation.navigation.Navigation
 import com.example.taskmanager.presentation.navigation.Screens
 import com.example.taskmanager.presentation.screens.noteForm.navigateToNoteFormScreen
-import com.example.taskmanager.presentation.screens.notes.NotesScreenRoute
+import com.example.taskmanager.presentation.screens.notes.navigateToNotesScreen
+import com.example.taskmanager.presentation.screens.notes.notesScreenRoute
 import com.example.taskmanager.presentation.screens.reminderForm.navigateToReminderFormScreen
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainLayout() {
     val navHostController = rememberNavController()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val snackbarHostState by remember {
         mutableStateOf(SnackbarHostState())
     }
@@ -29,17 +34,25 @@ fun MainLayout() {
             SnackbarHost(hostState = snackbarHostState)
         },
         content = {
-            Navigation(
-                navHostController = navHostController,
-                snackbarHostState = snackbarHostState,
-                paddingValues = it
-            )
+            ModalNavigationDrawer(
+                drawerContent = { DrawerContent(navHostController = navHostController) },
+                drawerState = drawerState,
+                modifier = Modifier.padding(
+                    top = it.calculateTopPadding(),
+                    bottom = it.calculateBottomPadding()
+                )
+            ) {
+                Navigation(
+                    navHostController = navHostController,
+                    snackbarHostState = snackbarHostState
+                )
+            }
         },
         topBar = {
             TopAppBar(
                 title = { Text("Task Manager") },
                 navigationIcon = {
-                    NavigationIcon(navHostController)
+                    NavigationIcon(navHostController, drawerState)
                 },
                 actions = {
                     IconButton(onClick = navHostController::navigateToNoteFormScreen) {
@@ -55,10 +68,12 @@ fun MainLayout() {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NavigationIcon(navHostController: NavHostController) {
+private fun NavigationIcon(navHostController: NavHostController, drawerState: DrawerState) {
     val currentRoute by navHostController.currentBackStackEntryAsState()
-    if (currentRoute?.destination?.route != Screens.NotesScreenRoute())
+    val coroutine = rememberCoroutineScope()
+    if (currentRoute?.destination?.route != Screens.notesScreenRoute())
         IconButton(onClick = navHostController::popBackStack) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -66,10 +81,90 @@ private fun NavigationIcon(navHostController: NavHostController) {
             )
         }
     else
-        IconButton(onClick = { }) {
+        IconButton(onClick = {
+            coroutine.launch {
+                if (drawerState.isClosed)
+                    drawerState.open()
+                else
+                    drawerState.close()
+            }
+        }) {
             Icon(
                 imageVector = Icons.Default.Menu,
                 contentDescription = null
             )
         }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DrawerContent(navHostController: NavHostController) {
+    val currentDestination by navHostController.currentBackStackEntryAsState()
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.surface)
+            .fillMaxWidth(0.9f)
+            .padding(8.dp)
+            .fillMaxHeight(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        ExpandableBox(
+            title = "Notes",
+            selected = currentDestination?.destination?.route == Screens.notesScreenRoute(),
+            icon = { Icon(imageVector = Icons.Default.Notes, contentDescription = null) },
+            onTitleClick = navHostController::navigateToNotesScreen
+        ) {
+            NavigationDrawerItem(
+                label = { Text("Archived") },
+                selected = false,
+                onClick = { })
+        }
+
+    }
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ExpandableBox(
+    title: String,
+    selected: Boolean = false,
+    icon: @Composable () -> Unit = {},
+    onTitleClick: () -> Unit = {},
+    content: @Composable ColumnScope.() -> Unit
+) {
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+    Column(
+        modifier = Modifier.animateContentSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        NavigationDrawerItem(
+            label = { Text(title) },
+            selected = selected,
+            onClick = {
+                expanded = !expanded
+                onTitleClick()
+            },
+            icon = icon,
+            badge = {
+                IconButton(onClick = { expanded = !expanded }) {
+                    if (expanded)
+                        Icon(imageVector = Icons.Default.ExpandLess, contentDescription = null)
+                    else
+                        Icon(imageVector = Icons.Default.ExpandMore, contentDescription = null)
+                }
+            }
+        )
+        if (expanded)
+            Column(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                content()
+            }
+    }
+
 }

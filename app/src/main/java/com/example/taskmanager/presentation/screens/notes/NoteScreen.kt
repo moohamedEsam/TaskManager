@@ -30,12 +30,12 @@ import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 
 @Composable
-fun NotesScreenRoute(
+fun notesScreenRoute(
     onNoteClick: (String) -> Unit = {},
     viewModel: NotesViewModel = koinViewModel()
 ) {
     val notes by viewModel.notes.collectAsState()
-    NotesScreenRoute(
+    notesScreenRoute(
         notes = notes,
         onFavoriteClick = viewModel::updateFavorite,
         onPinClick = viewModel::updatePin,
@@ -45,7 +45,7 @@ fun NotesScreenRoute(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun NotesScreenRoute(
+fun notesScreenRoute(
     notes: List<NoteWithTags>,
     onFavoriteClick: (NoteWithTags) -> Unit,
     onPinClick: (NoteWithTags) -> Unit,
@@ -192,7 +192,7 @@ private fun TagsRow(tags: List<Tag>, onTagClick: (Tag) -> Unit) {
 @Composable
 fun LazyGridPreview() {
     TaskManagerTheme {
-        NotesScreenRoute(
+        notesScreenRoute(
             notes = listOf(
                 NoteWithTags("first note", emptyList(), emptyList(), emptyList()),
                 NoteWithTags("second note", emptyList(), emptyList(), emptyList()),

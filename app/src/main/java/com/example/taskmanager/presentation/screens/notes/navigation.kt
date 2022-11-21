@@ -5,16 +5,18 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.taskmanager.presentation.navigation.Screens
 
-fun Screens.NotesScreenRoute() = "Notes"
+fun Screens.notesScreenRoute() = "Notes"
 
 fun NavGraphBuilder.notesFormScreen(
     onNoteClick: (String) -> Unit,
 ) {
-    composable(Screens.NotesScreenRoute()) {
-        NotesScreenRoute(onNoteClick)
+    composable(Screens.notesScreenRoute()) {
+        notesScreenRoute(onNoteClick)
     }
 }
 
 fun NavHostController.navigateToNotesScreen() {
-    navigate(Screens.NotesScreenRoute())
+    navigate(Screens.notesScreenRoute()) {
+        launchSingleTop = true
+    }
 }

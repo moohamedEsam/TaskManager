@@ -143,5 +143,6 @@ class ReminderFormViewModel(
         isArchived = false,
         isDeleted = false,
         isFavorite = false,
+        createdAt = Date().time
     )
 }
