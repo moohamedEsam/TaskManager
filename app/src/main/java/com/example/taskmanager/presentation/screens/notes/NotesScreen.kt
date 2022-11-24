@@ -10,9 +10,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -34,7 +34,7 @@ import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 
 @Composable
-fun notesScreenRoute(
+fun NotesScreen(
     snackbarHostState: SnackbarHostState,
     onNoteClick: (String) -> Unit = {},
     viewModel: NotesViewModel = koinViewModel()
@@ -46,7 +46,7 @@ fun notesScreenRoute(
             snackbarHostState.handleEvent(it)
         }
     }
-    notesScreenRoute(
+    NotesScreen(
         notes = notes,
         query = query,
         onQueryChange = viewModel::setQuery,
@@ -59,7 +59,7 @@ fun notesScreenRoute(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun notesScreenRoute(
+fun NotesScreen(
     notes: List<NoteWithTags>,
     query: String,
     onQueryChange: (String) -> Unit,
@@ -178,25 +178,27 @@ private fun NoteCardIconButtons(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        IconButton(onClick = onFavoriteClick) {
-            if (note.isFavorite)
-                Icon(imageVector = Icons.Default.Favorite, contentDescription = null)
-            else
-                Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = null)
-        }
-        IconButton(onClick = onPinClick) {
-            Icon(
-                painter = if (note.isPinned)
-                    painterResource(id = R.drawable.pin_filled)
+        if (!note.isArchived)
+            IconButton(onClick = onFavoriteClick) {
+                if (note.isFavorite)
+                    Icon(imageVector = Icons.Default.Favorite, contentDescription = null)
                 else
-                    painterResource(id = R.drawable.pin),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-        }
+                    Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = null)
+            }
+        if (!note.isArchived)
+            IconButton(onClick = onPinClick) {
+                Icon(
+                    painter = if (note.isPinned)
+                        painterResource(id = R.drawable.pin_filled)
+                    else
+                        painterResource(id = R.drawable.pin),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         IconButton(onClick = onArchiveClick) {
             Icon(
-                imageVector = Icons.Outlined.Archive,
+                imageVector = if (!note.isArchived) Icons.Outlined.Archive else Icons.Filled.Unarchive,
                 contentDescription = null
             )
         }
@@ -219,7 +221,7 @@ private fun TagsRow(tags: List<Tag>, onTagClick: (Tag) -> Unit) {
 @Composable
 fun LazyGridPreview() {
     TaskManagerTheme {
-        notesScreenRoute(
+        NotesScreen(
             notes = listOf(
                 NoteWithTags("first note", emptyList(), emptyList(), emptyList()),
                 NoteWithTags("second note", emptyList(), emptyList(), emptyList()),

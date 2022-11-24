@@ -14,6 +14,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.taskmanager.presentation.navigation.Navigation
 import com.example.taskmanager.presentation.navigation.Screens
+import com.example.taskmanager.presentation.screens.archivedNotes.navigateToArchivedNotesScreen
 import com.example.taskmanager.presentation.screens.noteForm.navigateToNoteFormScreen
 import com.example.taskmanager.presentation.screens.notes.navigateToNotesScreen
 import com.example.taskmanager.presentation.screens.notes.notesScreenRoute
@@ -51,21 +52,33 @@ fun MainLayout() {
             }
         },
         topBar = {
-            TopAppBar(
-                title = { Text("Task Manager") },
-                navigationIcon = {
-                    NavigationIcon(navHostController, drawerState)
-                },
-                actions = {
-                    IconButton(onClick = navHostController::navigateToNoteFormScreen) {
-                        Icon(Icons.Filled.NoteAdd, contentDescription = "Add note")
-                    }
+            TopAppBarContent(navHostController, drawerState)
+        }
+    )
+}
 
-                    IconButton(onClick = navHostController::navigateToReminderFormScreen) {
-                        Icon(Icons.Filled.AlarmAdd, contentDescription = "Add reminder")
-                    }
-                }
-            )
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun TopAppBarContent(
+    navHostController: NavHostController,
+    drawerState: DrawerState
+) {
+    val currentDestination by navHostController.currentBackStackEntryAsState()
+    TopAppBar(
+        title = {
+            Text(currentDestination?.destination?.route?.takeWhile { it != '/' } ?: "task manager")
+        },
+        navigationIcon = {
+            NavigationIcon(navHostController, drawerState)
+        },
+        actions = {
+            IconButton(onClick = navHostController::navigateToNoteFormScreen) {
+                Icon(Icons.Filled.NoteAdd, contentDescription = "Add note")
+            }
+
+            IconButton(onClick = navHostController::navigateToReminderFormScreen) {
+                Icon(Icons.Filled.AlarmAdd, contentDescription = "Add reminder")
+            }
         }
     )
 }
@@ -75,7 +88,11 @@ fun MainLayout() {
 private fun NavigationIcon(navHostController: NavHostController, drawerState: DrawerState) {
     val currentRoute by navHostController.currentBackStackEntryAsState()
     val coroutine = rememberCoroutineScope()
-    if (currentRoute?.destination?.route !in listOf(Screens.notesScreenRoute(), Screens.remindersScreenRoute()))
+    if (currentRoute?.destination?.route !in listOf(
+            Screens.notesScreenRoute(),
+            Screens.remindersScreenRoute()
+        )
+    )
         IconButton(onClick = navHostController::popBackStack) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -120,20 +137,16 @@ private fun DrawerContent(navHostController: NavHostController) {
             NavigationDrawerItem(
                 label = { Text("Archived") },
                 selected = false,
-                onClick = { })
+                onClick = navHostController::navigateToArchivedNotesScreen
+            )
         }
 
-        ExpandableBox(
-            title = "Reminders",
+        NavigationDrawerItem(
+            label = { Text("Reminders") },
             selected = currentDestination?.destination?.route == Screens.remindersScreenRoute(),
             icon = { Icon(imageVector = Icons.Default.Alarm, contentDescription = null) },
-            onTitleClick = navHostController::navigateToRemindersScreen
-        ) {
-            NavigationDrawerItem(
-                label = { Text("Archived") },
-                selected = false,
-                onClick = { })
-        }
+            onClick = navHostController::navigateToRemindersScreen
+        )
 
     }
 

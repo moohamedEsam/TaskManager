@@ -7,7 +7,7 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
 import com.example.taskmanager.presentation.navigation.Screens
 
-private val NOTE_FORM_SCREEN_NAME = "noteFormScreen"
+private val NOTE_FORM_SCREEN_NAME = "Note Form"
 
 fun Screens.noteFormScreenRoute() = "$NOTE_FORM_SCREEN_NAME/{noteId}"
 

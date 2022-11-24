@@ -5,16 +5,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.taskmanager.presentation.navigation.Screens
 
-fun Screens.remindersScreenRoute() = "reminders_screen"
+fun Screens.remindersScreenRoute() = "Reminders"
 
 fun NavGraphBuilder.remindersScreen(onReminderClick: (String) -> Unit) {
-    composable("reminders_screen") {
+    composable(Screens.remindersScreenRoute()) {
         RemindersScreen(onReminderClick)
     }
 }
 
 fun NavHostController.navigateToRemindersScreen() {
-    navigate("reminders_screen"){
+    navigate(Screens.remindersScreenRoute()){
         launchSingleTop = true
     }
 }

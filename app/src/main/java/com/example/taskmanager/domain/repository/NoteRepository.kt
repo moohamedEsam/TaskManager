@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface NoteRepository {
     fun getNotes(): Flow<List<NoteWithTags>>
+    fun getArchivedNotes(): Flow<List<NoteWithTags>>
     fun getNoteById(id: String): Flow<NoteWithTags?>
     suspend fun addNote(note: NoteWithTags): Resource<Unit>
     suspend fun updateNote(note: NoteWithTags): Resource<Unit>

@@ -18,6 +18,10 @@ interface NoteDao {
     fun getNotes(): Flow<List<NoteWithTagsEntity>>
 
     @Transaction
+    @Query("SELECT * FROM notes where isArchived = 1 order by isPinned desc, creationDate desc")
+    fun getArchivedNotes(): Flow<List<NoteWithTagsEntity>>
+
+    @Transaction
     @Query("SELECT * FROM notes WHERE noteId = :id")
     fun getNoteById(id: String): Flow<NoteWithTagsEntity?>
 

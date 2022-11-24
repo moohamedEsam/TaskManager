@@ -21,6 +21,11 @@ class NoteRepositoryImpl(
             it.map(NoteWithTagsEntity::asDomain)
         }
 
+    override fun getArchivedNotes(): Flow<List<NoteWithTags>> = noteDao.getArchivedNotes()
+        .map {
+            it.map(NoteWithTagsEntity::asDomain)
+        }
+
     override fun getNoteById(id: String): Flow<NoteWithTags?> = noteDao.getNoteById(id)
         .map {
             it?.asDomain()

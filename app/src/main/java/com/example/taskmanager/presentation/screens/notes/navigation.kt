@@ -13,7 +13,7 @@ fun NavGraphBuilder.notesFormScreen(
     onNoteClick: (String) -> Unit,
 ) {
     composable(Screens.notesScreenRoute()) {
-        notesScreenRoute(snackbarHostState, onNoteClick)
+        NotesScreen(snackbarHostState, onNoteClick)
     }
 }
 

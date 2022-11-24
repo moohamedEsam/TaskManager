@@ -4,7 +4,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.navigation.*
 import androidx.navigation.compose.composable
 
-private const val reminderRoute = "reminders"
+private const val reminderRoute = "Reminders Form"
 
 fun NavGraphBuilder.reminderFormScreen(
     snackbarHostState: SnackbarHostState,

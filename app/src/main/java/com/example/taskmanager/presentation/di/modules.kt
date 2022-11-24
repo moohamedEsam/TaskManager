@@ -16,6 +16,7 @@ import com.example.taskmanager.domain.usecase.note.*
 import com.example.taskmanager.domain.usecase.reminder.*
 import com.example.taskmanager.domain.usecase.tag.CreateTagUseCase
 import com.example.taskmanager.domain.usecase.tag.GetTagsUseCase
+import com.example.taskmanager.presentation.screens.archivedNotes.ArchivedNotesViewModel
 import com.example.taskmanager.presentation.screens.noteForm.NoteFormViewModel
 import com.example.taskmanager.presentation.screens.noteDetailsScreen.NoteDetailsViewModel
 import com.example.taskmanager.presentation.screens.notes.NotesViewModel
@@ -33,6 +34,7 @@ val noteModule = module {
     single { updateNoteUseCase(androidContext(), get()) }
     single { DeleteNoteUseCase(get<NoteRepository>()::deleteNote) }
     single { GetNotesUseCase(get<NoteRepository>()::getNotes) }
+    single { GetArchivedNotesUseCase(get<NoteRepository>()::getArchivedNotes) }
     single { GetNoteByIdUseCase(get<NoteRepository>()::getNoteById) }
     single { UpdateNoteArchiveUseCase(get<NoteRepository>()::updateNoteArchived) }
     single { UpdateNotePinUseCase(get<NoteRepository>()::updateNotePinned) }
@@ -41,6 +43,7 @@ val noteModule = module {
     viewModel { NotesViewModel(get(), get(), get(), get(), get()) }
     viewModel { params -> NoteDetailsViewModel(get(), get(), get(), get(), get(), params[0]) }
     viewModel { params -> NoteFormViewModel(params[0], get(), get(), get(), get(), get()) }
+    viewModel { ArchivedNotesViewModel(get(), get()) }
 }
 
 val tagModule = module {

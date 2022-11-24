@@ -5,7 +5,7 @@ import androidx.navigation.*
 import androidx.navigation.compose.composable
 import com.example.taskmanager.presentation.navigation.Screens
 
-private const val NOTE_DETAILS_SCREEN_NAME = "noteDetailsScreen"
+private const val NOTE_DETAILS_SCREEN_NAME = "Note Details"
 
 fun NavGraphBuilder.noteDetailsScreen(
     onEditClick: (String) -> Unit

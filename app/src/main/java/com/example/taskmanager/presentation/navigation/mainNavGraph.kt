@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.example.taskmanager.presentation.screens.archivedNotes.archivedNotesScreen
 import com.example.taskmanager.presentation.screens.noteDetailsScreen.navigateToNoteDetailsScreen
 import com.example.taskmanager.presentation.screens.noteDetailsScreen.noteDetailsScreen
 import com.example.taskmanager.presentation.screens.noteForm.navigateToNoteFormScreen
@@ -33,6 +34,10 @@ fun Navigation(
     ) {
 
         notesFormScreen(snackbarHostState) {
+            navHostController.navigateToNoteDetailsScreen(it)
+        }
+
+        archivedNotesScreen(snackbarHostState) {
             navHostController.navigateToNoteDetailsScreen(it)
         }
 
