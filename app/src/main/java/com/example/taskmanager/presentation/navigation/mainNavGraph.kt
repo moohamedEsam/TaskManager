@@ -29,10 +29,10 @@ fun Navigation(
         startDestination = Screens.notesScreenRoute(),
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 8.dp)
+            .padding(8.dp)
     ) {
 
-        notesFormScreen {
+        notesFormScreen(snackbarHostState) {
             navHostController.navigateToNoteDetailsScreen(it)
         }
 

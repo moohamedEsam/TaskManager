@@ -10,8 +10,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,22 +25,34 @@ import androidx.compose.ui.unit.dp
 import com.example.taskmanager.R
 import com.example.taskmanager.domain.models.note.NoteWithTags
 import com.example.taskmanager.domain.models.tag.Tag
+import com.example.taskmanager.presentation.utils.handleEvent
 import com.example.taskmanager.presentation.utils.noteBody.NoteImage
 import com.example.taskmanager.presentation.utils.noteBody.NoteText
 import com.example.taskmanager.ui.theme.TaskManagerTheme
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 
 @Composable
 fun notesScreenRoute(
+    snackbarHostState: SnackbarHostState,
     onNoteClick: (String) -> Unit = {},
     viewModel: NotesViewModel = koinViewModel()
 ) {
     val notes by viewModel.notes.collectAsState()
+    val query by viewModel.query.collectAsState()
+    LaunchedEffect(key1 = Unit) {
+        viewModel.receiveChannel.collectLatest {
+            snackbarHostState.handleEvent(it)
+        }
+    }
     notesScreenRoute(
         notes = notes,
+        query = query,
+        onQueryChange = viewModel::setQuery,
         onFavoriteClick = viewModel::updateFavorite,
         onPinClick = viewModel::updatePin,
+        onArchiveClick = viewModel::updateArchive,
         onNoteClick = onNoteClick
     )
 }
@@ -47,8 +61,11 @@ fun notesScreenRoute(
 @Composable
 fun notesScreenRoute(
     notes: List<NoteWithTags>,
+    query: String,
+    onQueryChange: (String) -> Unit,
     onFavoriteClick: (NoteWithTags) -> Unit,
     onPinClick: (NoteWithTags) -> Unit,
+    onArchiveClick: (NoteWithTags) -> Unit,
     onNoteClick: (String) -> Unit
 ) {
     Column(
@@ -56,8 +73,8 @@ fun notesScreenRoute(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         TextField(
-            value = "",
-            onValueChange = {},
+            value = query,
+            onValueChange = onQueryChange,
             label = { Text("Search Notes") },
             modifier = Modifier
                 .fillMaxWidth()
@@ -74,7 +91,8 @@ fun notesScreenRoute(
                     note = note,
                     onFavoriteClick = { onFavoriteClick(note) },
                     onPinClick = { onPinClick(note) },
-                    modifier = Modifier.animateItemPlacement()
+                    onArchiveClick = { onArchiveClick(note) },
+                    modifier = Modifier.animateItemPlacement(),
                 )
             }
         }
@@ -89,6 +107,7 @@ private fun NoteCardItem(
     modifier: Modifier = Modifier,
     onFavoriteClick: () -> Unit = {},
     onPinClick: () -> Unit = {},
+    onArchiveClick: () -> Unit,
     onTagClick: (Tag) -> Unit = {}
 ) {
     val simpleDateFormat by remember {
@@ -117,7 +136,8 @@ private fun NoteCardItem(
                     note = note,
                     modifier = Modifier.align(Alignment.TopEnd),
                     onFavoriteClick = onFavoriteClick,
-                    onPinClick = onPinClick
+                    onPinClick = onPinClick,
+                    onArchiveClick = onArchiveClick
                 )
             }
             Column(
@@ -151,6 +171,7 @@ private fun NoteCardIconButtons(
     note: NoteWithTags,
     modifier: Modifier = Modifier,
     onFavoriteClick: () -> Unit,
+    onArchiveClick: () -> Unit,
     onPinClick: () -> Unit
 ) {
     Row(
@@ -171,6 +192,12 @@ private fun NoteCardIconButtons(
                     painterResource(id = R.drawable.pin),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp)
+            )
+        }
+        IconButton(onClick = onArchiveClick) {
+            Icon(
+                imageVector = Icons.Outlined.Archive,
+                contentDescription = null
             )
         }
     }
@@ -202,7 +229,10 @@ fun LazyGridPreview() {
             ),
             onFavoriteClick = {},
             onPinClick = {},
-            onNoteClick = {}
+            onNoteClick = {},
+            onArchiveClick = {},
+            onQueryChange = {},
+            query = ""
         )
     }
 }

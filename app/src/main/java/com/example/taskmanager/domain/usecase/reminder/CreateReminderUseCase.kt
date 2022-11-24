@@ -28,7 +28,6 @@ fun createReminderUseCase(reminderRepository: ReminderRepository, context: Conte
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-        pendingIntent.send()
-//        alarmManager.setExact(AlarmManager.RTC_WAKEUP, it.date, pendingIntent)
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, it.date, pendingIntent)
         reminderRepository.addReminder(it)
     }

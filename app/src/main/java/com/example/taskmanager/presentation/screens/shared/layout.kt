@@ -18,6 +18,8 @@ import com.example.taskmanager.presentation.screens.noteForm.navigateToNoteFormS
 import com.example.taskmanager.presentation.screens.notes.navigateToNotesScreen
 import com.example.taskmanager.presentation.screens.notes.notesScreenRoute
 import com.example.taskmanager.presentation.screens.reminderForm.navigateToReminderFormScreen
+import com.example.taskmanager.presentation.screens.reminders.navigateToRemindersScreen
+import com.example.taskmanager.presentation.screens.reminders.remindersScreenRoute
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,7 +75,7 @@ fun MainLayout() {
 private fun NavigationIcon(navHostController: NavHostController, drawerState: DrawerState) {
     val currentRoute by navHostController.currentBackStackEntryAsState()
     val coroutine = rememberCoroutineScope()
-    if (currentRoute?.destination?.route != Screens.notesScreenRoute())
+    if (currentRoute?.destination?.route !in listOf(Screens.notesScreenRoute(), Screens.remindersScreenRoute()))
         IconButton(onClick = navHostController::popBackStack) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -114,6 +116,18 @@ private fun DrawerContent(navHostController: NavHostController) {
             selected = currentDestination?.destination?.route == Screens.notesScreenRoute(),
             icon = { Icon(imageVector = Icons.Default.Notes, contentDescription = null) },
             onTitleClick = navHostController::navigateToNotesScreen
+        ) {
+            NavigationDrawerItem(
+                label = { Text("Archived") },
+                selected = false,
+                onClick = { })
+        }
+
+        ExpandableBox(
+            title = "Reminders",
+            selected = currentDestination?.destination?.route == Screens.remindersScreenRoute(),
+            icon = { Icon(imageVector = Icons.Default.Alarm, contentDescription = null) },
+            onTitleClick = navHostController::navigateToRemindersScreen
         ) {
             NavigationDrawerItem(
                 label = { Text("Archived") },

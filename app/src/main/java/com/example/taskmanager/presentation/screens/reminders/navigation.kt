@@ -14,5 +14,7 @@ fun NavGraphBuilder.remindersScreen(onReminderClick: (String) -> Unit) {
 }
 
 fun NavHostController.navigateToRemindersScreen() {
-    navigate("reminders_screen")
+    navigate("reminders_screen"){
+        launchSingleTop = true
+    }
 }
