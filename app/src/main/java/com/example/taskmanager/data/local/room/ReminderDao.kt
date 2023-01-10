@@ -23,7 +23,6 @@ interface ReminderDao {
     @Update
     suspend fun update(reminderEntity: ReminderEntity)
 
-
     @Delete
     suspend fun delete(reminderEntity: ReminderEntity)
 

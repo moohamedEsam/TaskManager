@@ -33,7 +33,8 @@ class NoteImage(override var uriString: String) : NoteMedia {
         AsyncImage(
             model = bitmap,
             contentDescription = null,
-            modifier = modifier
+            modifier = modifier,
+            contentScale = ContentScale.FillBounds
         )
     }
 

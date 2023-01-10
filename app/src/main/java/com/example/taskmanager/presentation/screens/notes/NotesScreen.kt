@@ -117,11 +117,11 @@ private fun NoteCardItem(
         onClick = { onNoteClick(note.noteId) },
         modifier = modifier
             .height((LocalConfiguration.current.screenHeightDp / 3).dp)
+            .fillMaxWidth(),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
         ) {
             Box(
                 modifier = Modifier
@@ -144,12 +144,14 @@ private fun NoteCardItem(
                 modifier = Modifier
                     .weight(0.8f)
                     .padding(16.dp)
-                    .align(Alignment.CenterHorizontally),
+                    .align(Alignment.CenterHorizontally)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
                     text = note.title,
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.headlineSmall,
+                    maxLines = 1
                 )
                 note.body.find { it is NoteText }?.let {
                     Text(

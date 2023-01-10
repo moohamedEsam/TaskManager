@@ -13,7 +13,11 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -87,12 +91,23 @@ fun NoteFormScreenContent(
     onTagLongClick: (Tag) -> Unit,
     onSaveNote: () -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        ToolBoxRow(
+            modifier = Modifier,
+            onTitleClick = { onAddNoteBody(TextProvider()) },
+            onListClick = { onAddNoteBody(ListProvider(ListType.Normal)) },
+            onBulletListClick = { onAddNoteBody(ListProvider(ListType.Bullet)) },
+            onNumberedListClick = { onAddNoteBody(ListProvider(ListType.Numbered)) },
+            onCheckListClick = { onAddNoteBody(ListProvider(ListType.Check)) },
+            onTableClick = { onAddNoteBody(TableProvider()) },
+            onImageClick = { onAddNoteBody(ImageProvider()) },
+        )
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxSize()
                 .animateContentSize()
+                .imePadding()
         ) {
             item {
                 NoteTitle(
@@ -124,16 +139,7 @@ fun NoteFormScreenContent(
                 }
             }
         }
-        ToolBoxRow(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            onTitleClick = { onAddNoteBody(TextProvider()) },
-            onListClick = { onAddNoteBody(ListProvider(ListType.Normal)) },
-            onBulletListClick = { onAddNoteBody(ListProvider(ListType.Bullet)) },
-            onNumberedListClick = { onAddNoteBody(ListProvider(ListType.Numbered)) },
-            onCheckListClick = { onAddNoteBody(ListProvider(ListType.Check)) },
-            onTableClick = { onAddNoteBody(TableProvider()) },
-            onImageClick = { onAddNoteBody(ImageProvider()) },
-        )
+
     }
 }
 
@@ -170,7 +176,7 @@ private fun ActionRow(onSave: () -> Unit = {}) {
 
 @Composable
 private fun ToolBoxRow(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onTitleClick: () -> Unit = {},
     onBulletListClick: () -> Unit = {},
     onNumberedListClick: () -> Unit = {},
@@ -180,42 +186,41 @@ private fun ToolBoxRow(
     onVideoClick: () -> Unit = {},
     onTableClick: () -> Unit = {},
 ) {
-    Card(modifier = modifier.padding(horizontal = 16.dp)) {
-        Row(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(0.8f)
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onTitleClick) {
-                Icon(imageVector = Icons.Default.Title, contentDescription = null)
-            }
-            IconButton(onClick = onListClick) {
-                Icon(imageVector = Icons.Default.List, contentDescription = null)
-            }
-            IconButton(onClick = onBulletListClick) {
-                Icon(imageVector = Icons.Default.FormatListBulleted, contentDescription = null)
-            }
 
-            IconButton(onClick = onNumberedListClick) {
-                Icon(imageVector = Icons.Default.FormatListNumbered, contentDescription = null)
-            }
-            IconButton(onClick = onCheckListClick) {
-                Icon(imageVector = Icons.Default.Checklist, contentDescription = null)
-            }
-            IconButton(onClick = onImageClick) {
-                Icon(imageVector = Icons.Default.Image, contentDescription = null)
-            }
-            IconButton(onClick = onVideoClick) {
-                Icon(imageVector = Icons.Default.VideoFile, contentDescription = null)
-            }
-            IconButton(onClick = onTableClick) {
-                Icon(imageVector = Icons.Default.TableView, contentDescription = null)
-            }
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = onTitleClick) {
+            Icon(imageVector = Icons.Default.Title, contentDescription = null)
+        }
+        IconButton(onClick = onListClick) {
+            Icon(imageVector = Icons.Default.List, contentDescription = null)
+        }
+        IconButton(onClick = onBulletListClick) {
+            Icon(imageVector = Icons.Default.FormatListBulleted, contentDescription = null)
+        }
+
+        IconButton(onClick = onNumberedListClick) {
+            Icon(imageVector = Icons.Default.FormatListNumbered, contentDescription = null)
+        }
+        IconButton(onClick = onCheckListClick) {
+            Icon(imageVector = Icons.Default.Checklist, contentDescription = null)
+        }
+        IconButton(onClick = onImageClick) {
+            Icon(imageVector = Icons.Default.Image, contentDescription = null)
+        }
+        IconButton(onClick = onVideoClick) {
+            Icon(imageVector = Icons.Default.VideoFile, contentDescription = null)
+        }
+        IconButton(onClick = onTableClick) {
+            Icon(imageVector = Icons.Default.TableView, contentDescription = null)
         }
     }
+
 }
 
 @Preview
